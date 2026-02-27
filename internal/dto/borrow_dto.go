@@ -19,9 +19,9 @@ type (
 
 	BorrowResponse struct {
 		ID           uint               `json:"id"`
-		User         UserResponse       `json:"user"`
+		User         *UserResponse      `json:"user"`
 		ReviewedUser *UserResponse      `json:"reviewedUser"`
-		Item         ItemResponse       `json:"item"`
+		Item         *ItemResponse      `json:"item"`
 		Purpose      string             `json:"purpose"`
 		Quantity     int                `json:"quantity"`
 		OfficerNote  *string            `json:"officerNote"`

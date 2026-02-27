@@ -12,13 +12,13 @@ type (
 	}
 
 	ReturnResponse struct {
-		ID           uint           `json:"id"`
-		Borrow       BorrowResponse `json:"borrow"`
-		ReturnDate   time.Time      `json:"returnDate"`
-		BorrowerNote *string        `json:"borrowerNote"`
-		Fine         *float64       `json:"fine"`
-		CreatedAt    time.Time      `json:"createdAt"`
-		UpdatedAt    time.Time      `json:"updatedAt"`
+		ID           uint            `json:"id"`
+		Borrow       *BorrowResponse `json:"borrow"`
+		ReturnDate   time.Time       `json:"returnDate"`
+		BorrowerNote *string         `json:"borrowerNote"`
+		Fine         *float64        `json:"fine"`
+		CreatedAt    time.Time       `json:"createdAt"`
+		UpdatedAt    time.Time       `json:"updatedAt"`
 	}
 
 	ReturnRequest struct {

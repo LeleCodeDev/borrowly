@@ -15,11 +15,23 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 		reviewUser = &userResponse
 	}
 
+	var user *dto.UserResponse
+	if borrow.User.ID != 0 {
+		userResponse := ToUserResponse(&borrow.User)
+		user = &userResponse
+	}
+
+	var item *dto.ItemResponse
+	if borrow.Item.ID != 0 {
+		itemResponse := ToItemResponse(&borrow.Item)
+		item = &itemResponse
+	}
+
 	return dto.BorrowResponse{
 		ID:           borrow.ID,
-		User:         ToUserResponse(&borrow.User),
+		User:         user,
 		ReviewedUser: reviewUser,
-		Item:         ToItemResponse(&borrow.Item),
+		Item:         item,
 		Purpose:      borrow.Purpose,
 		Quantity:     borrow.Quantity,
 		OfficerNote:  borrow.OfficerNote,

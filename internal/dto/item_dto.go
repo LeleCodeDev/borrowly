@@ -17,15 +17,15 @@ type (
 	}
 
 	ItemResponse struct {
-		ID          uint             `json:"id"`
-		Name        string           `json:"name"`
-		Description string           `json:"description"`
-		Category    CategoryResponse `json:"category"`
-		Quantity    int              `json:"quantity"`
-		Image       *string          `json:"image"`
-		Status      model.ItemStatus `json:"status"`
-		CreatedAt   time.Time        `json:"createdAt"`
-		UpdatedAt   time.Time        `json:"updatedAt"`
+		ID          uint              `json:"id"`
+		Name        string            `json:"name"`
+		Description string            `json:"description"`
+		Category    *CategoryResponse `json:"category"`
+		Quantity    int               `json:"quantity"`
+		Image       *string           `json:"image"`
+		Status      model.ItemStatus  `json:"status"`
+		CreatedAt   time.Time         `json:"createdAt"`
+		UpdatedAt   time.Time         `json:"updatedAt"`
 	}
 
 	ItemCreateRequest struct {

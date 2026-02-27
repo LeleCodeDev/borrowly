@@ -9,9 +9,15 @@ import (
 )
 
 func ToReturnResponse(returnBorrow *model.Return) dto.ReturnResponse {
+	var borrow *dto.BorrowResponse
+	if returnBorrow.Borrow.ID != 0 {
+		borrowResponse := ToBorrowResponse(&returnBorrow.Borrow)
+		borrow = &borrowResponse
+	}
+
 	return dto.ReturnResponse{
 		ID:           returnBorrow.ID,
-		Borrow:       ToBorrowResponse(&returnBorrow.Borrow),
+		Borrow:       borrow,
 		ReturnDate:   returnBorrow.Borrow.ReturnDate,
 		BorrowerNote: returnBorrow.BorrowerNote,
 		Fine:         returnBorrow.Fine,

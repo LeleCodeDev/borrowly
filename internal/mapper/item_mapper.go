@@ -21,11 +21,17 @@ func ToItemResponse(item *model.Item) dto.ItemResponse {
 		imageLink = &link
 	}
 
+	var category *dto.CategoryResponse
+	if item.Category.ID != 0 {
+		categoryResponse := ToCategoryResponse(&item.Category)
+		category = &categoryResponse
+	}
+
 	return dto.ItemResponse{
 		ID:          item.ID,
 		Name:        item.Name,
 		Description: item.Description,
-		Category:    ToCategoryResponse(&item.Category),
+		Category:    category,
 		Quantity:    item.Quantity,
 		Image:       imageLink,
 		Status:      item.Status,
