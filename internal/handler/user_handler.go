@@ -1,0 +1,124 @@
+// Package handler
+package handler
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lelecodedev/borrowly/internal/dto"
+	"github.com/lelecodedev/borrowly/internal/model"
+	"github.com/lelecodedev/borrowly/internal/service"
+	"github.com/lelecodedev/borrowly/pkg/errors"
+	"github.com/lelecodedev/borrowly/pkg/pagination"
+	"github.com/lelecodedev/borrowly/pkg/response"
+)
+
+type UserHandler struct {
+	service *service.UserService
+}
+
+func NewUserHandler(service *service.UserService) *UserHandler {
+	return &UserHandler{service: service}
+}
+
+func (h *UserHandler) GetAllUsers(c *gin.Context) {
+	var req dto.UserQuery
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		if valError, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation error", valError)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	req.SetDefaults()
+	ctx := c.Request.Context()
+
+	users, total, err := h.service.GetAll(ctx, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	pagination := pagination.BuildPagination(req.Page, req.Size, total)
+
+	response.Paginated(c, http.StatusOK, "All users successfully fetched", users, pagination)
+}
+
+func (h *UserHandler) GetUserByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	user, err := h.service.GetByID(ctx, id)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "User successfully fetched", user)
+}
+
+func (h *UserHandler) CreateUser(c *gin.Context) {
+	var req dto.UserCreateRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		if valError, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation error", valError)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	user, err := h.service.Create(ctx, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusCreated, "User successfully created", user)
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	var req dto.UserUpdateRequest
+	if err := c.ShouldBind(&req); err != nil {
+
+		if valError, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation error", valError)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	user, err := h.service.Update(ctx, id, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "User successfully updated", user)
+}
