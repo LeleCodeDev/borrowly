@@ -79,6 +79,6 @@ func (r *CategoryRepository) WithTx(tx *gorm.DB) *CategoryRepository {
 	return &CategoryRepository{db: tx}
 }
 
-func (r *CategoryRepository) Delete(ctx context.Context, id int) error {
-	return r.db.WithContext(ctx).Delete(&model.Category{}, id).Error
+func (r *CategoryRepository) Delete(ctx context.Context, category *model.Category) error {
+	return r.db.WithContext(ctx).Delete(category).Error
 }

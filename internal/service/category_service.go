@@ -158,6 +158,14 @@ func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id
 		txBorrowRepo := s.borrowRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
+		category, err := txCategoryRepo.GetByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if category == nil {
+			return errors.NotFound(fmt.Sprintf("Category not found with ID: %d", id))
+		}
+
 		exist, err := txBorrowRepo.ExistActiveByItemCategoryID(ctx, id)
 		if err != nil {
 			return err
@@ -170,7 +178,7 @@ func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id
 			return err
 		}
 
-		if err := txCategoryRepo.Delete(ctx, id); err != nil {
+		if err := txCategoryRepo.Delete(ctx, category); err != nil {
 			return err
 		}
 

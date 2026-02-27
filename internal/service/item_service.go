@@ -19,6 +19,7 @@ type ItemService struct {
 	txManager    *repository.TxManager
 	repo         *repository.ItemRepository
 	categoryRepo *repository.CategoryRepository
+	borrowRepo   *repository.BorrowRepository
 	logRepo      *repository.LogActivityRepository
 }
 
@@ -194,4 +195,39 @@ func (s *ItemService) Update(ctx context.Context, id int, currentUser model.User
 	}
 
 	return mapper.ToItemResponse(UpdatedItem), nil
+}
+
+func (s *ItemService) Delete(ctx context.Context, currentUser model.User, id int) error {
+	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txItemRepo := s.repo.WithTx(tx)
+		txBorrowRepo := s.borrowRepo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		item, err := txItemRepo.GetByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if item == nil {
+			return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", id))
+		}
+
+		exist, err := txBorrowRepo.ExistActiveByItemID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if exist {
+			return errors.Conflict("Cannot delete item that are currently being borrowed")
+		}
+
+		if item.Image != nil {
+			image.DeleteImage(*item.Image)
+		}
+
+		if err := txItemRepo.Delete(ctx, item); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteItem)
+		return txLogRepo.Create(ctx, log)
+	})
 }

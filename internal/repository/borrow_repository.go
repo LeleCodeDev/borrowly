@@ -72,6 +72,17 @@ func (r *BorrowRepository) ExistActiveByItemCategoryID(ctx context.Context, cata
 	return count > 0, err
 }
 
+func (r *BorrowRepository) ExistActiveByItemID(ctx context.Context, itemID int) (bool, error) {
+	var count int64
+	err := r.db.WithContext(ctx).
+		Model(&model.Borrow{}).
+		Joins("JOIN items ON items.id = borrows.item_id AND items.deleted_at IS NULL").
+		Where("items.id = ?", itemID).
+		Where("borrows.status = ? OR borrows.status = ?", model.BorrowStatusApproved, model.BorrowStatusBorrowed).
+		Count(&count).Error
+	return count > 0, err
+}
+
 func (r *BorrowRepository) UserGetAll(ctx context.Context, userID uint, req dto.BorrowQuery) ([]model.Borrow, int64, error) {
 	var borrows []model.Borrow
 	var total int64
