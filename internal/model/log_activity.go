@@ -32,7 +32,7 @@ const (
 
 type LogActivity struct {
 	ID        uint         `json:"id" gorm:"primaryKey"`
-	UserID    *uint        `json:"userId" `
+	UserID    *uint        `json:"userId" gorm:"index"`
 	User      *User        `json:"user" gorm:"constraint:OnDelete:SET NULL"`
 	Activity  ActivityType `gorm:"not null"`
 	CreatedAt time.Time    `json:"createdAt"`

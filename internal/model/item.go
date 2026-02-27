@@ -18,7 +18,7 @@ type Item struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
 	Name        string         `json:"name" gorm:"not null;index;type:varchar(255);uniqueIndex:idx_name_deleted_at"`
 	Description string         `json:"description" gorm:"type:text"`
-	CategoryID  uint           `json:"categoryId" gorm:"not null"`
+	CategoryID  uint           `json:"categoryId" gorm:"not null;index"`
 	Category    Category       `json:"category" gorm:"constraint:OnDelete:CASCADE"`
 	Quantity    int            `json:"quantity" gorm:"not null"`
 	Image       *string        `json:"image" gorm:"type:varchar(255)"`

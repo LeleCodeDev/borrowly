@@ -19,11 +19,11 @@ const (
 
 type Borrow struct {
 	ID             uint           `json:"id" gorm:"primaryKey;autoIncrement:true"`
-	UserID         uint           `json:"userId" gorm:"not null"`
+	UserID         uint           `json:"userId" gorm:"not null;index"`
 	User           User           `json:"user" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	ReviewedUserID *uint          `json:"reviewedUserID"`
+	ReviewedUserID *uint          `json:"reviewedUserID" gorm:"index"`
 	ReviewedUser   *User          `json:"reviewedUser" gorm:"foreignKey:ReviewedUserID;constraint:OnDelete:SET NULL"`
-	ItemID         uint           `json:"itemId" gorm:"not null"`
+	ItemID         uint           `json:"itemId" gorm:"not null;index"`
 	Item           Item           `json:"item" gorm:"constraint:OnDelete:CASCADE"`
 	Purpose        string         `json:"purpose" gorm:"not null"`
 	Quantity       int            `json:"quantity" gorm:"not null"`
