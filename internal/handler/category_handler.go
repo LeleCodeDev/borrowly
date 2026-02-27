@@ -127,3 +127,21 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 	response.Success(c, http.StatusOK, "Category successfully updated", category)
 }
+
+func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	if err := h.service.Delete(ctx, currentUser, id); err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success[any](c, http.StatusOK, "Category successfully deleted", nil)
+}

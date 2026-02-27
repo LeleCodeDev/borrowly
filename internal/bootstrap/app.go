@@ -36,24 +36,19 @@ func NewApp() *App {
 	db := database.NewDB()
 	txManager := repository.NewTxManager(db)
 
-	logRepo := repository.NewLogActivityRepository(db)
-	logService := service.NewLogService(logRepo)
-
 	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(txManager, userRepo, logRepo)
-
-	authService := service.NewAuthRepository(txManager, userRepo)
-
+	logRepo := repository.NewLogActivityRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
-	categoryService := service.NewCategoryService(txManager, categoryRepo, logRepo)
-
 	itemRepo := repository.NewItemRepository(db)
-	itemService := service.NewItemService(txManager, itemRepo, categoryRepo, logRepo)
-
 	borrowRepo := repository.NewBorrowRepository(db)
-	borrowService := service.NewBorrowService(txManager, borrowRepo, itemRepo, logRepo)
-
 	returnRepo := repository.NewReturnRepository(db)
+
+	logService := service.NewLogService(logRepo)
+	userService := service.NewUserService(txManager, userRepo, logRepo)
+	authService := service.NewAuthService(txManager, userRepo)
+	categoryService := service.NewCategoryService(txManager, categoryRepo, itemRepo, borrowRepo, logRepo)
+	itemService := service.NewItemService(txManager, itemRepo, categoryRepo, logRepo)
+	borrowService := service.NewBorrowService(txManager, borrowRepo, itemRepo, logRepo)
 	returnService := service.NewReturnService(returnRepo)
 
 	app := &App{

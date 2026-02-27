@@ -48,6 +48,7 @@ func (a *App) RegisterRoute() {
 
 		admin.POST("/categories", a.CategoryHandler.CreateCategory)
 		admin.PUT("/categories/:id", a.CategoryHandler.UpdateCategory)
+		admin.DELETE("/categories/:id", a.CategoryHandler.DeleteCategory)
 
 		admin.POST("/items", a.ItemHandler.CreateItem)
 		admin.PUT("/items/:id", a.ItemHandler.UpdateItem)

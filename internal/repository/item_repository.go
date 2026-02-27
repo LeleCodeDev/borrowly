@@ -20,6 +20,10 @@ func NewItemRepository(db *gorm.DB) *ItemRepository {
 	}
 }
 
+func (r *ItemRepository) WithTx(tx *gorm.DB) *ItemRepository {
+	return &ItemRepository{db: tx}
+}
+
 func (r *ItemRepository) Create(ctx context.Context, item *model.Item) error {
 	return r.db.WithContext(ctx).Create(item).Error
 }
@@ -81,6 +85,6 @@ func (r *ItemRepository) ExistByName(ctx context.Context, name string) (bool, er
 	return count > 0, err
 }
 
-func (r *ItemRepository) WithTx(tx *gorm.DB) *ItemRepository {
-	return &ItemRepository{db: tx}
+func (r *ItemRepository) DeleteByCategoryID(ctx context.Context, catgoryID int) error {
+	return r.db.WithContext(ctx).Where("category_id = ?", catgoryID).Delete(&model.Item{}).Error
 }

@@ -60,6 +60,18 @@ func (r *BorrowRepository) GetAll(ctx context.Context, req dto.BorrowQuery) ([]m
 	return borrows, total, nil
 }
 
+func (r *BorrowRepository) ExistActiveByItemCategoryID(ctx context.Context, catagoryID int) (bool, error) {
+	var count int64
+	err := r.db.WithContext(ctx).
+		Model(&model.Borrow{}).
+		Joins("JOIN items ON items.id = borrows.item_id AND items.deleted_at IS NULL").
+		Joins("JOIN categories ON categories.id = items.category_id AND categories.deleted_at IS NULL").
+		Where("categories.id = ?", catagoryID).
+		Where("borrows.status = ? OR borrows.status = ?", model.BorrowStatusApproved, model.BorrowStatusBorrowed).
+		Count(&count).Error
+	return count > 0, err
+}
+
 func (r *BorrowRepository) UserGetAll(ctx context.Context, userID uint, req dto.BorrowQuery) ([]model.Borrow, int64, error) {
 	var borrows []model.Borrow
 	var total int64

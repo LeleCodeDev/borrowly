@@ -19,7 +19,7 @@ type AuthService struct {
 	userRepo  *repository.UserRepository
 }
 
-func NewAuthRepository(txManager *repository.TxManager, userRepo *repository.UserRepository) *AuthService {
+func NewAuthService(txManager *repository.TxManager, userRepo *repository.UserRepository) *AuthService {
 	return &AuthService{
 		txManager: txManager,
 		userRepo:  userRepo,

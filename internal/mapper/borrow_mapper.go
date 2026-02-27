@@ -15,8 +15,6 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 		reviewUser = &userResponse
 	}
 
-	correctStatus := (borrow.Status == model.BorrowStatusBorrowed || borrow.Status == model.BorrowStatusReturned)
-
 	return dto.BorrowResponse{
 		ID:           borrow.ID,
 		User:         ToUserResponse(&borrow.User),
@@ -29,7 +27,7 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 		ReturnDate:   borrow.ReturnDate,
 		Status:       borrow.Status,
 		ReviewAt:     borrow.ReviewAt,
-		IsOverdue:    correctStatus && time.Now().After(borrow.ReturnDate),
+		IsOverdue:    borrow.Status == model.BorrowStatusBorrowed && time.Now().After(borrow.ReturnDate),
 		CreatedAt:    borrow.CreatedAt,
 		UpdatedAt:    borrow.UpdatedAt,
 	}

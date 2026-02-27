@@ -14,20 +14,26 @@ import (
 )
 
 type CategoryService struct {
-	txManager *repository.TxManager
-	repo      *repository.CategoryRepository
-	logRepo   *repository.LogActivityRepository
+	txManager  *repository.TxManager
+	repo       *repository.CategoryRepository
+	itemRepo   *repository.ItemRepository
+	borrowRepo *repository.BorrowRepository
+	logRepo    *repository.LogActivityRepository
 }
 
 func NewCategoryService(
 	txManager *repository.TxManager,
 	repo *repository.CategoryRepository,
+	itemRepo *repository.ItemRepository,
+	borrowRepo *repository.BorrowRepository,
 	logRepo *repository.LogActivityRepository,
 ) *CategoryService {
 	return &CategoryService{
-		txManager: txManager,
-		repo:      repo,
-		logRepo:   logRepo,
+		txManager:  txManager,
+		repo:       repo,
+		itemRepo:   itemRepo,
+		borrowRepo: borrowRepo,
+		logRepo:    logRepo,
 	}
 }
 
@@ -143,4 +149,32 @@ func (s *CategoryService) Update(ctx context.Context, id int, currentUser model.
 	}
 
 	return mapper.ToCategoryResponse(Updatedcategory), nil
+}
+
+func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id int) error {
+	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txCategoryRepo := s.repo.WithTx(tx)
+		txItemRepo := s.itemRepo.WithTx(tx)
+		txBorrowRepo := s.borrowRepo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		exist, err := txBorrowRepo.ExistActiveByItemCategoryID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if exist {
+			return errors.Conflict("Cannot delete category with items that are currently being borrowed")
+		}
+
+		if err := txItemRepo.DeleteByCategoryID(ctx, id); err != nil {
+			return err
+		}
+
+		if err := txCategoryRepo.Delete(ctx, id); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteCategory)
+		return txLogRepo.Create(ctx, log)
+	})
 }

@@ -129,7 +129,7 @@ func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, http.StatusOK, "Borrow successfully accepted", borrow)
+	response.Success(c, http.StatusOK, "Borrow successfully approved", borrow)
 }
 
 func (h *BorrowHandler) RejectBorrow(c *gin.Context) {

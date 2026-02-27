@@ -28,6 +28,13 @@ func AlreadyExist(message string) *ServiceError {
 	}
 }
 
+func Conflict(message string) *ServiceError {
+	return &ServiceError{
+		Message:    message,
+		StatusCode: http.StatusConflict,
+	}
+}
+
 func Unauthorized(message string) *ServiceError {
 	return &ServiceError{
 		Message:    message,
