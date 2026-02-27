@@ -83,7 +83,7 @@ func (r *BorrowRepository) ExistActiveByItemID(ctx context.Context, itemID int) 
 	return count > 0, err
 }
 
-func (r *BorrowRepository) UserGetAll(ctx context.Context, userID uint, req dto.BorrowQuery) ([]model.Borrow, int64, error) {
+func (r *BorrowRepository) GetAllByUserID(ctx context.Context, userID uint, req dto.BorrowQuery) ([]model.Borrow, int64, error) {
 	var borrows []model.Borrow
 	var total int64
 

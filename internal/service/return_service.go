@@ -36,7 +36,7 @@ func (s *ReturnService) GetAll(ctx context.Context, req dto.ReturnQuery) ([]dto.
 }
 
 func (s *ReturnService) UserGetAll(ctx context.Context, currentUser model.User, req dto.ReturnQuery) ([]dto.ReturnResponse, int64, error) {
-	returns, total, err := s.repo.UserGetAll(ctx, currentUser.ID, req)
+	returns, total, err := s.repo.GetAllByUserID(ctx, currentUser.ID, req)
 	if err != nil {
 		return nil, 0, err
 	}

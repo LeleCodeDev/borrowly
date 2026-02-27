@@ -56,7 +56,7 @@ func (r *ReturnRepository) GetAll(ctx context.Context, req dto.ReturnQuery) ([]m
 	return returns, total, nil
 }
 
-func (r *ReturnRepository) UserGetAll(ctx context.Context, userID uint, req dto.ReturnQuery) ([]model.Return, int64, error) {
+func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req dto.ReturnQuery) ([]model.Return, int64, error) {
 	var returns []model.Return
 	var total int64
 

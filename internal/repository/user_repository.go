@@ -94,3 +94,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 
 	return &user, nil
 }
+
+func (r *UserRepository) Delete(ctx context.Context, user *model.User) error {
+	return r.db.WithContext(ctx).Delete(user).Error
+}

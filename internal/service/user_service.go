@@ -134,3 +134,25 @@ func (s *UserService) Update(ctx context.Context, id int, currentUser model.User
 
 	return mapper.ToUserResponse(updatedUser), nil
 }
+
+func (s *UserService) Delete(ctx context.Context, currentUser model.User, id int) error {
+	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txUserRepo := s.repo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		user, err := txUserRepo.GetByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return errors.NotFound(fmt.Sprintf("User not found with ID: %d", id))
+		}
+
+		if err := txUserRepo.Delete(ctx, user); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteUser)
+		return txLogRepo.Create(ctx, log)
+	})
+}

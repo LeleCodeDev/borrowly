@@ -52,7 +52,7 @@ func (s *BorrowService) GetAll(ctx context.Context, req dto.BorrowQuery) ([]dto.
 }
 
 func (s *BorrowService) UserGetAll(ctx context.Context, currentUser model.User, req dto.BorrowQuery) ([]dto.BorrowResponse, int64, error) {
-	borrows, total, err := s.repo.UserGetAll(ctx, currentUser.ID, req)
+	borrows, total, err := s.repo.GetAllByUserID(ctx, currentUser.ID, req)
 	if err != nil {
 		return nil, 0, err
 	}
