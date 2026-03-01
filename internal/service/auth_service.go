@@ -71,15 +71,11 @@ func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (dto.Auth
 		return dto.AuthResponse{}, err
 	}
 	if user == nil {
-		return dto.AuthResponse{}, errors.NotFound("User not found")
+		return dto.AuthResponse{}, errors.NotFound("Invalid email or password")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		if err == bcrypt.ErrMismatchedHashAndPassword {
-			return dto.AuthResponse{}, errors.Unauthorized("Invalid email or password")
-		}
-
-		return dto.AuthResponse{}, err
+		return dto.AuthResponse{}, errors.Unauthorized("Invalid email or password")
 	}
 
 	token, err := jwt.GenerateToken(user.ID)
@@ -88,4 +84,9 @@ func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (dto.Auth
 	}
 
 	return mapper.ToAuthResponse(user, token), nil
+}
+
+func (s *AuthService) GetProfile(currentUser model.User) dto.UserResponse {
+	user := mapper.ToUserResponse(&currentUser)
+	return user
 }

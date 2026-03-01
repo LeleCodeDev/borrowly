@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lelecodedev/borrowly/internal/dto"
+	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
 	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/response"
@@ -65,4 +66,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusCreated, "User successfully login", auth)
+}
+
+func (h *AuthHandler) GetUserProfile(c *gin.Context) {
+	currentUser := c.MustGet("user").(model.User)
+
+	user := h.service.GetProfile(currentUser)
+
+	response.Success(c, http.StatusOK, "User profile successfully fetched", user)
 }

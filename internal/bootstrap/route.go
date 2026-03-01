@@ -27,6 +27,8 @@ func (a *App) RegisterRoute() {
 
 		allRoles.GET("/items", a.ItemHandler.GetAllItems)
 		allRoles.GET("/items/:id", a.ItemHandler.GetItemByID)
+
+		allRoles.GET("/auth/me", a.AuthHandler.GetUserProfile)
 	}
 
 	adminAndOfficer := authenticated.Group("")
