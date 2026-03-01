@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Port      string
-	Host      string
+	BaseURL   string
 	DBHost    string
 	DBPort    string
 	DBUser    string
@@ -28,7 +28,7 @@ func LoadConfig() {
 
 	config := &Config{
 		Port:      getEnv("PORT", "3000"),
-		Host:      getEnv("HOST", "http://localhost:3000"),
+		BaseURL:   getEnv("BASE_URL", "http://localhost:3000"),
 		DBHost:    getEnv("DB_HOST", "localhost"),
 		DBPort:    getEnv("DB_PORT", "3306"),
 		DBUser:    getEnv("DB_USER", "root"),

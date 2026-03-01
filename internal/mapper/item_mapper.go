@@ -2,25 +2,11 @@
 package mapper
 
 import (
-	"fmt"
-
-	"github.com/lelecodedev/borrowly/internal/config"
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 )
 
 func ToItemResponse(item *model.Item) dto.ItemResponse {
-	var imageLink *string
-	if item.Image != nil {
-		link := fmt.Sprintf("https://%s/%s", config.Env.Host, *item.Image)
-
-		if config.Env.Host == "localhost" {
-			link = fmt.Sprintf("http://%s:%s/%s", config.Env.Host, config.Env.Port, *item.Image)
-		}
-
-		imageLink = &link
-	}
-
 	var category *dto.CategoryResponse
 	if item.Category.ID != 0 {
 		categoryResponse := ToCategoryResponse(&item.Category)
@@ -33,7 +19,7 @@ func ToItemResponse(item *model.Item) dto.ItemResponse {
 		Description: item.Description,
 		Category:    category,
 		Quantity:    item.Quantity,
-		Image:       imageLink,
+		Image:       item.Image,
 		Status:      item.Status,
 		CreatedAt:   item.CreatedAt,
 		UpdatedAt:   item.UpdatedAt,

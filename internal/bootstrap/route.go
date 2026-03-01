@@ -6,9 +6,9 @@ import (
 )
 
 func (a *App) RegisterRoute() {
-	a.Router.Static("/uploads", "uploads")
-
 	api := a.Router.Group("/api")
+
+	api.Static("/uploads", "uploads")
 
 	auth := api.Group("/auth")
 	{
