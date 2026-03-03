@@ -42,5 +42,5 @@ type (
 
 func (uq *UserQuery) SetDefaults() {
 	uq.PaginationQuery.SetDefaults()
-	uq.SortQuery.SetDefaults()
+	uq.SortQuery.SetDefaults(OrderCreatedAt)
 }

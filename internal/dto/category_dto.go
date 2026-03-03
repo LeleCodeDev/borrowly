@@ -29,5 +29,5 @@ type (
 
 func (cq *CategoryQuery) SetDefaults() {
 	cq.PaginationQuery.SetDefaults()
-	cq.SortQuery.SetDefaults()
+	cq.SortQuery.SetDefaults(OrderCreatedAt)
 }

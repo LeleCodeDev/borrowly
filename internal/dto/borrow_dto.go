@@ -49,5 +49,5 @@ type (
 
 func (bq *BorrowQuery) SetDefaults() {
 	bq.PaginationQuery.SetDefaults()
-	bq.SortQuery.SetDefaults()
+	bq.SortQuery.SetDefaults(OrderCreatedAt)
 }

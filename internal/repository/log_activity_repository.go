@@ -35,7 +35,7 @@ func (r *LogActivityRepository) GetAll(ctx context.Context, req dto.LogQuery) ([
 		return nil, 0, err
 	}
 
-	db = db.Order(req.OrderBy + " " + req.Order)
+	db = db.Order(string(req.OrderBy) + " " + req.Order)
 
 	db = db.Offset(req.GetOffset()).Limit(req.Size)
 
