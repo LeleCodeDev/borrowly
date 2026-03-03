@@ -23,6 +23,6 @@ type (
 
 func (lq *LogQuery) SetDefaults() {
 	lq.PaginationQuery.SetDefaults()
-	lq.SortQuery.SetDefaults(OrderCreatedAt)
+	lq.SortQuery.SetDefaults(OrderDesc, OrderCreatedAt)
 	lq.OrderBy = "created_at"
 }

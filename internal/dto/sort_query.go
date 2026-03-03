@@ -1,21 +1,28 @@
 // Package dto
 package dto
 
-type OrderByValue string
+type OrderByType string
 
 const (
-	OrderCreatedAt OrderByValue = "created_at"
-	OrderUpdatedAt OrderByValue = "updated_at"
+	OrderCreatedAt OrderByType = "created_at"
+	OrderUpdatedAt OrderByType = "updated_at"
+)
+
+type OrderType string
+
+const (
+	OrderDesc OrderType = "desc"
+	OrderAsc  OrderType = "asc"
 )
 
 type SortQuery struct {
-	Order   string       `form:"order" json:"order" binding:"omitempty,oneof=asc desc"`
-	OrderBy OrderByValue `form:"orderBy" json:"orderBy" binding:"omitempty,oneof=created_at updated_at"`
+	Order   OrderType   `form:"order" json:"order" binding:"omitempty,oneof=asc desc"`
+	OrderBy OrderByType `form:"orderBy" json:"orderBy" binding:"omitempty,oneof=created_at updated_at"`
 }
 
-func (sq *SortQuery) SetDefaults(orderBy OrderByValue) {
+func (sq *SortQuery) SetDefaults(order OrderType, orderBy OrderByType) {
 	if sq.Order == "" {
-		sq.Order = "desc"
+		sq.Order = order
 	}
 
 	if sq.OrderBy == "" {

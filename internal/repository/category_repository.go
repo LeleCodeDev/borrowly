@@ -34,7 +34,7 @@ func (r *CategoryRepository) GetAll(ctx context.Context, req dto.CategoryQuery) 
 		return nil, 0, err
 	}
 
-	db = db.Order(string(req.OrderBy) + " " + req.Order)
+	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
 	if !req.Unpage {
 		db = db.Offset(req.GetOffset()).Limit(req.Size)

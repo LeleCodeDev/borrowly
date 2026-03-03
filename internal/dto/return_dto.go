@@ -28,5 +28,5 @@ type (
 
 func (rq *ReturnQuery) SetDefaults() {
 	rq.PaginationQuery.SetDefaults()
-	rq.SortQuery.SetDefaults(OrderCreatedAt)
+	rq.SortQuery.SetDefaults(OrderDesc, OrderCreatedAt)
 }

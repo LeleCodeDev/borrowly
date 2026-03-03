@@ -45,5 +45,5 @@ type (
 
 func (iq *ItemQuery) SetDefaults() {
 	iq.PaginationQuery.SetDefaults()
-	iq.SortQuery.SetDefaults(OrderCreatedAt)
+	iq.SortQuery.SetDefaults(OrderAsc, OrderCreatedAt)
 }

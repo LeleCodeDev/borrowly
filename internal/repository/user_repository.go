@@ -70,7 +70,7 @@ func (r *UserRepository) GetAll(ctx context.Context, req dto.UserQuery) ([]model
 		return nil, 0, err
 	}
 
-	db = db.Order(string(req.OrderBy) + " " + req.Order)
+	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
 	db = db.Offset(req.GetOffset()).Limit(req.Size)
 

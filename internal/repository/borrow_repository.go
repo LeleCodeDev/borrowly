@@ -49,7 +49,7 @@ func (r *BorrowRepository) GetAll(ctx context.Context, req dto.BorrowQuery) ([]m
 		return nil, 0, err
 	}
 
-	db = db.Order(string(req.OrderBy) + " " + req.Order)
+	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
 	db = db.Offset(req.GetOffset()).Limit(req.Size)
 
@@ -112,7 +112,7 @@ func (r *BorrowRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 		return nil, 0, err
 	}
 
-	db = db.Order(string(req.OrderBy) + " " + req.Order)
+	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
 	db = db.Offset(req.GetOffset()).Limit(req.Size)
 
