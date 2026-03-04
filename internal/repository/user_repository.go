@@ -59,7 +59,7 @@ func (r *UserRepository) GetAll(ctx context.Context, req dto.UserQuery) ([]model
 	db = db.Where("role != ?", "admin")
 
 	if req.Search != "" {
-		db = db.Where("name LIKE ? OR email LIKE ?", "%"+req.Search+"%", "%"+req.Search+"%")
+		db = db.Where("username LIKE ? OR email LIKE ?", "%"+req.Search+"%", "%"+req.Search+"%")
 	}
 
 	if req.Role != "" {
