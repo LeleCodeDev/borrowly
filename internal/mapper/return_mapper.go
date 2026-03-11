@@ -18,7 +18,7 @@ func ToReturnResponse(returnBorrow *model.Return) dto.ReturnResponse {
 	return dto.ReturnResponse{
 		ID:           returnBorrow.ID,
 		Borrow:       borrow,
-		ReturnDate:   returnBorrow.Borrow.ReturnDate,
+		ReturnDate:   returnBorrow.ReturnDate,
 		BorrowerNote: returnBorrow.BorrowerNote,
 		Fine:         returnBorrow.Fine,
 		CreatedAt:    returnBorrow.CreatedAt,
