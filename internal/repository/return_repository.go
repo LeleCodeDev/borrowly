@@ -31,7 +31,13 @@ func (r *ReturnRepository) GetAll(ctx context.Context, req dto.ReturnQuery) ([]m
 	var returns []model.Return
 	var total int64
 
-	db := r.db.WithContext(ctx).Preload("Borrow").Model(&model.Return{})
+	db := r.db.WithContext(ctx).
+		Preload("Borrow").
+		Preload("Borrow.User").
+		Preload("Borrow.ReviewedUser").
+		Preload("Borrow.Item").
+		Preload("Borrow.Item.Category").
+		Model(&model.Return{})
 
 	if !req.StartDate.IsZero() {
 		db = db.Where("return_date >= ?", req.StartDate)
