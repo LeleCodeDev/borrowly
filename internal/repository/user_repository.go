@@ -98,3 +98,24 @@ func (r *UserRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 func (r *UserRepository) Delete(ctx context.Context, user *model.User) error {
 	return r.db.WithContext(ctx).Delete(user).Error
 }
+
+func (r *UserRepository) CountAll(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ItemRepository) CountByRole(ctx context.Context, role model.UserRole) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("role = ?", role).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

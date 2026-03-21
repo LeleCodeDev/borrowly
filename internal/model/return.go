@@ -9,7 +9,7 @@ import (
 
 type Return struct {
 	ID           uint           `json:"id" gorm:"primaryKey"`
-	BorrowID     uint           `json:"BorrowId" gorm:"not null;index"`
+	BorrowID     uint           `json:"borrowId" gorm:"not null;index"`
 	Borrow       Borrow         `json:"borrow" gorm:"constraint:OnDelete:CASCADE"`
 	ReturnDate   time.Time      `json:"returnDate" gorm:"type:date"`
 	BorrowerNote *string        `json:"borrowerNote" gorm:"type:text"`

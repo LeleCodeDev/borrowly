@@ -149,3 +149,26 @@ func (r *BorrowRepository) Create(ctx context.Context, borrow *model.Borrow) err
 func (r *BorrowRepository) Update(ctx context.Context, borrow *model.Borrow) error {
 	return r.db.WithContext(ctx).Save(borrow).Error
 }
+
+func (r *BorrowRepository) CountByStatus(ctx context.Context, status model.BorrowStatus) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Borrow{}).
+		Where("status = ?", status).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *BorrowRepository) CountByStatusAndUserID(ctx context.Context, status model.BorrowStatus, userID uint) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Borrow{}).
+		Where("status = ?", status).
+		Where("user_id = ?", userID).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

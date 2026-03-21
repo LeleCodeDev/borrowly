@@ -92,3 +92,24 @@ func (r *ItemRepository) Delete(ctx context.Context, item *model.Item) error {
 func (r *ItemRepository) DeleteByCategoryID(ctx context.Context, catgoryID int) error {
 	return r.db.WithContext(ctx).Where("category_id = ?", catgoryID).Delete(&model.Item{}).Error
 }
+
+func (r *ItemRepository) CountAll(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Item{}).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ItemRepository) CountByStatus(ctx context.Context, status model.ItemStatus) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Item{}).
+		Where("status = ?", status).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

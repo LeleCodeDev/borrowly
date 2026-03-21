@@ -99,3 +99,62 @@ func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 
 	return returns, total, nil
 }
+
+func (r *ReturnRepository) CountAll(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Return{}).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ReturnRepository) CountByUserID(ctx context.Context, userID uint) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Return{}).
+		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
+		Where("borrows.user_id = ?", userID).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ReturnRepository) CountAllIsOverdue(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Return{}).
+		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
+		Where("returns.return_date > borrows.return_date").
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ReturnRepository) CountAllIsOverdueByUserID(ctx context.Context, userID uint) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Return{}).
+		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
+		Where("borrows.user_id = ?", userID).
+		Where("returns.return_date > borrows.return_date").
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ReturnRepository) CountTotalFineByUserID(ctx context.Context, userID uint) (float64, error) {
+	var count float64
+	if err := r.db.WithContext(ctx).Model(&model.Return{}).
+		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
+		Where("borrows.user_id = ?", userID).
+		Select("COALESCE(SUM(fine), 0)").
+		Scan(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
