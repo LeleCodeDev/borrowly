@@ -67,6 +67,18 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 	response.Success(c, http.StatusOK, "User successfully fetched", user)
 }
 
+func (h *UserHandler) GetUserDashboard(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	dashboardData, err := h.service.GetDashboardData(ctx)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "User dashboard data successfully fetched", dashboardData)
+}
+
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req dto.UserCreateRequest
 

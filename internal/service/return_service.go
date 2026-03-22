@@ -49,3 +49,37 @@ func (s *ReturnService) UserGetAll(ctx context.Context, currentUser model.User, 
 
 	return responses, total, nil
 }
+
+func (s *ReturnService) GetDashboardData(ctx context.Context) (dto.ReturnDashboardResponse, error) {
+	totalReturn, err := s.repo.CountAll(ctx)
+	if err != nil {
+		return dto.ReturnDashboardResponse{}, err
+	}
+
+	totalOverdue, err := s.repo.CountAllIsOverdue(ctx)
+	if err != nil {
+		return dto.ReturnDashboardResponse{}, err
+	}
+
+	return dto.ReturnDashboardResponse{
+		TotalReturn:  totalReturn,
+		TotalOverdue: totalOverdue,
+	}, nil
+}
+
+func (s *ReturnService) GetUserDashboardData(ctx context.Context, currentUser model.User) (dto.ReturnDashboardResponse, error) {
+	totalReturn, err := s.repo.CountByUserID(ctx, currentUser.ID)
+	if err != nil {
+		return dto.ReturnDashboardResponse{}, err
+	}
+
+	totalOverdue, err := s.repo.CountAllIsOverdueByUserID(ctx, currentUser.ID)
+	if err != nil {
+		return dto.ReturnDashboardResponse{}, err
+	}
+
+	return dto.ReturnDashboardResponse{
+		TotalReturn:  totalReturn,
+		TotalOverdue: totalOverdue,
+	}, nil
+}

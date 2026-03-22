@@ -66,6 +66,52 @@ func (s *BorrowService) UserGetAll(ctx context.Context, currentUser model.User, 
 	return responses, total, nil
 }
 
+func (s *BorrowService) GetDashboardData(ctx context.Context) (dto.BorrowDashboardResponse, error) {
+	totalPending, err := s.repo.CountByStatus(ctx, model.BorrowStatusPending)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	totalApproved, err := s.repo.CountByStatus(ctx, model.BorrowStatusApproved)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	totalRejected, err := s.repo.CountByStatus(ctx, model.BorrowStatusRejected)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	return dto.BorrowDashboardResponse{
+		TotalPending:  totalPending,
+		TotalApproved: totalApproved,
+		TotalRejected: totalRejected,
+	}, nil
+}
+
+func (s *BorrowService) GetUserDashboardData(ctx context.Context, currentUser model.User) (dto.BorrowDashboardResponse, error) {
+	totalPending, err := s.repo.CountByStatusAndUserID(ctx, model.BorrowStatusPending, currentUser.ID)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	totalApproved, err := s.repo.CountByStatusAndUserID(ctx, model.BorrowStatusApproved, currentUser.ID)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	totalRejected, err := s.repo.CountByStatusAndUserID(ctx, model.BorrowStatusRejected, currentUser.ID)
+	if err != nil {
+		return dto.BorrowDashboardResponse{}, err
+	}
+
+	return dto.BorrowDashboardResponse{
+		TotalPending:  totalPending,
+		TotalApproved: totalApproved,
+		TotalRejected: totalRejected,
+	}, nil
+}
+
 func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req dto.BorrowRequest) (dto.BorrowResponse, error) {
 	var createdBorrow *model.Borrow
 

@@ -35,7 +35,9 @@ func (a *App) RegisterRoute() {
 	adminAndOfficer.Use(middleware.RoleMiddleware(model.RoleAdmin, model.RoleOfficer))
 	{
 		adminAndOfficer.GET("/borrows", a.BorrowHandler.GetAllBorrows)
+		adminAndOfficer.GET("/borrows/dashboard", a.BorrowHandler.GetBorrowDashboard)
 		adminAndOfficer.GET("/returns", a.ReturnHandler.GetAllReturns)
+		adminAndOfficer.GET("/returns/dashboard", a.ReturnHandler.GetReturnDashboard)
 	}
 
 	admin := authenticated.Group("")
@@ -45,6 +47,7 @@ func (a *App) RegisterRoute() {
 
 		admin.GET("/users", a.UserHandler.GetAllUsers)
 		admin.GET("/users/:id", a.UserHandler.GetUserByID)
+		admin.GET("/users/dashboard", a.UserHandler.GetUserDashboard)
 		admin.POST("/users", a.UserHandler.CreateUser)
 		admin.PUT("/users/:id", a.UserHandler.UpdateUser)
 		admin.DELETE("/users/:id", a.UserHandler.DeleteUser)
@@ -54,6 +57,7 @@ func (a *App) RegisterRoute() {
 		admin.DELETE("/categories/:id", a.CategoryHandler.DeleteCategory)
 
 		admin.POST("/items", a.ItemHandler.CreateItem)
+		admin.GET("/items/dashboard", a.ItemHandler.GetItemDashboard)
 		admin.PUT("/items/:id", a.ItemHandler.UpdateItem)
 		admin.DELETE("/items/:id", a.ItemHandler.DeleteItem)
 	}
@@ -62,11 +66,13 @@ func (a *App) RegisterRoute() {
 	borrower.Use(middleware.RoleMiddleware(model.RoleBorrower))
 	{
 		borrower.GET("/my-borrows", a.BorrowHandler.GetAllBorrowsByUser)
+		borrower.GET("/my-borrows/dashboard", a.BorrowHandler.GetBorrowDashboardByUser)
 		borrower.POST("/borrows", a.BorrowHandler.CreateBorrow)
 		borrower.PUT("/borrows/:id/confirm", a.BorrowHandler.ConfirmBorrow)
 		borrower.PUT("/borrows/:id/return", a.BorrowHandler.ReturnedBorrow)
 
 		borrower.GET("/my-returns", a.ReturnHandler.GetAllReturnsByUser)
+		adminAndOfficer.GET("/my-returns/dashboard", a.ReturnHandler.GetReturnDashboardByUser)
 	}
 
 	officer := authenticated.Group("")

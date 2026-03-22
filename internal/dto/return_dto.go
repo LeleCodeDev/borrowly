@@ -1,7 +1,9 @@
 // Package dto
 package dto
 
-import "time"
+import (
+	"time"
+)
 
 type (
 	ReturnQuery struct {
@@ -23,6 +25,11 @@ type (
 
 	ReturnRequest struct {
 		BorrowerNote *string `json:"borrowerNote"`
+	}
+
+	ReturnDashboardResponse struct {
+		TotalReturn  int64 `json:"totalReturn"`
+		TotalOverdue int64 `json:"totalOverdue"`
 	}
 )
 

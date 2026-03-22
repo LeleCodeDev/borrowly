@@ -59,6 +59,20 @@ func (s *UserService) GetByID(ctx context.Context, id int) (dto.UserResponse, er
 	return mapper.ToUserResponse(user), nil
 }
 
+func (s *UserService) GetDashboardData(ctx context.Context) (dto.UserDashboardResponse, error) {
+	totalBorrowers, err := s.repo.CountByRole(ctx, model.RoleBorrower)
+	if err != nil {
+		return dto.UserDashboardResponse{}, err
+	}
+
+	totalOfficers, err := s.repo.CountByRole(ctx, model.RoleOfficer)
+	if err != nil {
+		return dto.UserDashboardResponse{}, err
+	}
+
+	return dto.UserDashboardResponse{TotalBorrowers: totalBorrowers, TotalOfficers: totalOfficers}, nil
+}
+
 func (s *UserService) Create(ctx context.Context, currentUser model.User, req dto.UserCreateRequest) (dto.UserResponse, error) {
 	var createdUser *model.User
 

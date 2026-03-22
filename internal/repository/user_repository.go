@@ -109,7 +109,7 @@ func (r *UserRepository) CountAll(ctx context.Context) (int64, error) {
 	return count, nil
 }
 
-func (r *ItemRepository) CountByRole(ctx context.Context, role model.UserRole) (int64, error) {
+func (r *UserRepository) CountByRole(ctx context.Context, role model.UserRole) (int64, error) {
 	var count int64
 	if err := r.db.WithContext(ctx).
 		Model(&model.User{}).

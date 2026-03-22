@@ -45,6 +45,12 @@ type (
 	BorrowApprovalRequest struct {
 		OfficerNote *string `json:"officerNote"`
 	}
+
+	BorrowDashboardResponse struct {
+		TotalPending  int64 `json:"totalPending"`
+		TotalApproved int64 `json:"totalApproved"`
+		TotalRejected int64 `json:"totalRejected"`
+	}
 )
 
 func (bq *BorrowQuery) SetDefaults() {

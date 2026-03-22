@@ -77,6 +77,31 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	response.Paginated(c, http.StatusOK, "All borrows successfully fetched", borrows, pagination)
 }
 
+func (h *BorrowHandler) GetBorrowDashboard(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	dashboardData, err := h.Service.GetDashboardData(ctx)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
+}
+
+func (h *BorrowHandler) GetBorrowDashboardByUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	dashboardData, err := h.Service.GetUserDashboardData(ctx, currentUser)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
+}
+
 func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
 	var req dto.BorrowRequest
 

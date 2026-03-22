@@ -65,6 +65,20 @@ func (s *ItemService) GetByID(ctx context.Context, id int) (dto.ItemResponse, er
 	return mapper.ToItemResponse(item), nil
 }
 
+func (s *ItemService) GetDashboardData(ctx context.Context) (dto.ItemDashboardResponse, error) {
+	availableItems, err := s.repo.CountByStatus(ctx, model.ItemStatusAvailable)
+	if err != nil {
+		return dto.ItemDashboardResponse{}, err
+	}
+
+	unavailableItems, err := s.repo.CountByStatus(ctx, model.ItemStatusUnavailable)
+	if err != nil {
+		return dto.ItemDashboardResponse{}, err
+	}
+
+	return dto.ItemDashboardResponse{AvailableItems: availableItems, UnavailableItems: unavailableItems}, nil
+}
+
 func (s *ItemService) Create(ctx context.Context, currentUser model.User, req dto.ItemCreateRequest, file *multipart.FileHeader) (dto.ItemResponse, error) {
 	var createdItem *model.Item
 

@@ -38,6 +38,11 @@ type (
 		CreatedAt time.Time      `json:"createdAt"`
 		UpdatedAt time.Time      `json:"updatedAt"`
 	}
+
+	UserDashboardResponse struct {
+		TotalBorrowers int64 `json:"totalBorrowers"`
+		TotalOfficers  int64 `json:"totalOfficers"`
+	}
 )
 
 func (uq *UserQuery) SetDefaults() {

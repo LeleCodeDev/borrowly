@@ -68,6 +68,18 @@ func (h *ItemHandler) GetItemByID(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Item successfully fetched", item)
 }
 
+func (h *ItemHandler) GetItemDashboard(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	dashboardData, err := h.service.GetDashboardData(ctx)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Item dashboard data successfully fetched", dashboardData)
+}
+
 func (h *ItemHandler) CreateItem(c *gin.Context) {
 	var req dto.ItemCreateRequest
 

@@ -75,3 +75,28 @@ func (h *ReturnHandler) GetAllReturnsByUser(c *gin.Context) {
 	pagination := pagination.BuildPagination(req.Page, req.Size, total)
 	response.Paginated(c, http.StatusOK, "All returns successfully fetched", returns, pagination)
 }
+
+func (h *ReturnHandler) GetReturnDashboard(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	dashboardData, err := h.service.GetDashboardData(ctx)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", dashboardData)
+}
+
+func (h *ReturnHandler) GetReturnDashboardByUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	dashboardData, err := h.service.GetUserDashboardData(ctx, currentUser)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", dashboardData)
+}

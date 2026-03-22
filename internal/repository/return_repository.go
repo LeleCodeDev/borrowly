@@ -146,15 +146,3 @@ func (r *ReturnRepository) CountAllIsOverdueByUserID(ctx context.Context, userID
 	}
 	return count, nil
 }
-
-func (r *ReturnRepository) CountTotalFineByUserID(ctx context.Context, userID uint) (float64, error) {
-	var count float64
-	if err := r.db.WithContext(ctx).Model(&model.Return{}).
-		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
-		Where("borrows.user_id = ?", userID).
-		Select("COALESCE(SUM(fine), 0)").
-		Scan(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
-}

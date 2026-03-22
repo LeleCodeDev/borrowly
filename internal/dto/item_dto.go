@@ -41,6 +41,11 @@ type (
 		CategoryID  uint   `json:"categoryId" form:"categoryId" binding:"required,gt=0"`
 		Quantity    *int   `json:"quantity" form:"quantity" binding:"required"`
 	}
+
+	ItemDashboardResponse struct {
+		AvailableItems   int64 `json:"availableItems"`
+		UnavailableItems int64 `json:"unavailableItems"`
+	}
 )
 
 func (iq *ItemQuery) SetDefaults() {
