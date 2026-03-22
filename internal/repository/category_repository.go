@@ -82,3 +82,13 @@ func (r *CategoryRepository) WithTx(tx *gorm.DB) *CategoryRepository {
 func (r *CategoryRepository) Delete(ctx context.Context, category *model.Category) error {
 	return r.db.WithContext(ctx).Delete(category).Error
 }
+
+func (r *CategoryRepository) CountAll(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Category{}).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

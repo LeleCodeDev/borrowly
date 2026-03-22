@@ -45,6 +45,8 @@ func (a *App) RegisterRoute() {
 	{
 		admin.GET("/logs", a.LogHandler.GetAllLogs)
 
+		admin.GET("/admin/dashboard", a.DashboardHandler.GetAdminDashboard)
+
 		admin.GET("/users", a.UserHandler.GetAllUsers)
 		admin.GET("/users/:id", a.UserHandler.GetUserByID)
 		admin.GET("/users/dashboard", a.UserHandler.GetUserDashboard)
@@ -65,6 +67,9 @@ func (a *App) RegisterRoute() {
 	borrower := authenticated.Group("")
 	borrower.Use(middleware.RoleMiddleware(model.RoleBorrower))
 	{
+
+		borrower.GET("/borrower/dashboard", a.DashboardHandler.GetBorrowerDashboard)
+
 		borrower.GET("/my-borrows", a.BorrowHandler.GetAllBorrowsByUser)
 		borrower.GET("/my-borrows/dashboard", a.BorrowHandler.GetBorrowDashboardByUser)
 		borrower.POST("/borrows", a.BorrowHandler.CreateBorrow)
@@ -72,12 +77,15 @@ func (a *App) RegisterRoute() {
 		borrower.PUT("/borrows/:id/return", a.BorrowHandler.ReturnedBorrow)
 
 		borrower.GET("/my-returns", a.ReturnHandler.GetAllReturnsByUser)
-		adminAndOfficer.GET("/my-returns/dashboard", a.ReturnHandler.GetReturnDashboardByUser)
+		borrower.GET("/my-returns/dashboard", a.ReturnHandler.GetReturnDashboardByUser)
 	}
 
 	officer := authenticated.Group("")
 	officer.Use(middleware.RoleMiddleware(model.RoleOfficer))
 	{
+
+		officer.GET("/officer/dashboard", a.DashboardHandler.GetOfficerDashboard)
+
 		officer.PUT("/borrows/:id/approve", a.BorrowHandler.ApproveBorrow)
 		officer.PUT("/borrows/:id/reject", a.BorrowHandler.RejectBorrow)
 	}
