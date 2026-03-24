@@ -10,6 +10,8 @@ func (a *App) RegisterRoute() {
 
 	api.Static("/uploads", "uploads")
 
+	api.GET("/borrows/download-pdf", a.BorrowHandler.GenerateBorrowPDF)
+
 	auth := api.Group("/auth")
 	{
 		auth.POST("/register", a.AuthHandler.Register)

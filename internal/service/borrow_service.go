@@ -2,10 +2,13 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"html/template"
 	"time"
 
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/mapper"
 	"github.com/lelecodedev/borrowly/internal/model"
@@ -353,4 +356,46 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id i
 	}
 
 	return mapper.ToBorrowResponse(returnedBorrow), nil
+}
+
+func (s *BorrowService) GeneratePDF(ctx context.Context, req dto.BorrowQuery) ([]byte, error) {
+	borrows, _, err := s.repo.GetAll(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	templ, err := template.New("report.html").Funcs(template.FuncMap{
+		"Add": func(a, b int) int {
+			return a + b
+		},
+	}).ParseFiles("template/report.html")
+	if err != nil {
+		return nil, err
+	}
+
+	var htmlBuf bytes.Buffer
+	if err := templ.Execute(&htmlBuf, map[string]any{
+		"Borrows": borrows,
+		"Year":    time.Now().Year(),
+	}); err != nil {
+		return nil, err
+	}
+
+	pdfGen, err := wkhtmltopdf.NewPDFGenerator()
+	if err != nil {
+		return nil, err
+	}
+
+	pdfGen.Dpi.Set(300)
+	pdfGen.Orientation.Set(wkhtmltopdf.OrientationPortrait)
+	pdfGen.PageSize.Set(wkhtmltopdf.PageSizeA4)
+
+	page := wkhtmltopdf.NewPageReader(bytes.NewReader(htmlBuf.Bytes()))
+	pdfGen.AddPage(page)
+
+	if err := pdfGen.Create(); err != nil {
+		return nil, err
+	}
+
+	return pdfGen.Bytes(), nil
 }

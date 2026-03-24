@@ -2,6 +2,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -234,4 +235,39 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusOK, "Borrow successfully returned", borrow)
+}
+
+func (h *BorrowHandler) GenerateBorrowPDF(c *gin.Context) {
+	var req dto.BorrowQuery
+	if err := c.ShouldBindQuery(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+	req.SetDefaults()
+
+	ctx := c.Request.Context()
+	pdfBytes, err := h.Service.GeneratePDF(ctx, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	var filename string
+	if !req.StartDate.IsZero() && !req.EndDate.IsZero() {
+		filename = fmt.Sprintf("Borrow Report from %v to %v", req.StartDate.Format("2006-01-02"), req.EndDate.Format("2006-01-02"))
+	} else if !req.StartDate.IsZero() {
+		filename = fmt.Sprintf("Borrow Report from %v", req.StartDate.Format("2006-01-02"))
+	} else {
+		filename = "Borrow Report"
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+	c.Header("Content-Length", fmt.Sprintf("%d", len(pdfBytes)))
+
+	c.Data(http.StatusOK, "application/pdf", pdfBytes)
 }
