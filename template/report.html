@@ -19,6 +19,9 @@
 
       .header {
         margin-bottom: 32px;
+        text-align: center;
+        font-size: 3rem;
+        font-weight: bold;
       }
 
       .header h1 {
@@ -49,7 +52,6 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.6px;
-        color: #555;
         white-space: nowrap;
       }
 
@@ -64,7 +66,6 @@
       td {
         padding: 9px 12px;
         vertical-align: middle;
-        color: #1a1a1a;
       }
 
       .sub {
@@ -117,7 +118,6 @@
       .footer {
         margin-top: 40px;
         font-size: 10px;
-        color: #bbb;
         display: flex;
         justify-content: space-between;
         border-top: 1px solid #e8e8e8;
@@ -149,7 +149,7 @@
       <tbody>
         {{ range $index, $borrow := .Borrows }}
         <tr>
-          <td class="muted">{{ Add $index 1 }}</td>
+          <td>{{ Add $index 1 }}</td>
           <td>
             {{ $borrow.User.Username }}
             <span class="sub">{{ $borrow.User.Email }}</span>
