@@ -16,7 +16,7 @@ type (
 	LogResponse struct {
 		ID        uint               `json:"id"`
 		User      *UserResponse      `json:"user"`
-		Activity  model.ActivityType `gorm:"not null"`
+		Activity  model.ActivityType `json:"activity"`
 		CreatedAt time.Time          `json:"createdAt"`
 	}
 )

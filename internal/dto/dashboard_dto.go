@@ -4,9 +4,9 @@ package dto
 type (
 	AdminDashbordResponse struct {
 		TotalItems      int64 `json:"totalItems"`
-		TotalCategories int64 `json:"TotalCategories"`
+		TotalCategories int64 `json:"totalCategories"`
 		TotalUsers      int64 `json:"totalUsers"`
-		TotalBorrows    int64 `json:"TotalBorrows"`
+		TotalBorrows    int64 `json:"totalBorrows"`
 	}
 
 	BorrowerDashbordResponse struct {
