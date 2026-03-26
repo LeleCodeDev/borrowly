@@ -1,5 +1,5 @@
-.uploads/*
-!.uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
 tmp/
 .env
 
