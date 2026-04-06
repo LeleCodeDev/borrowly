@@ -21,6 +21,7 @@ const (
 	ActivityDeleteItem ActivityType = "DELETE_ITEM"
 
 	ActivityCreateBorrow   ActivityType = "CREATE_BORROW"
+	ActivityUpdateBorrow   ActivityType = "UPDATE_BORROW"
 	ActivityApproveBorrow  ActivityType = "APPROVE_BORROW"
 	ActivityRejectBorrow   ActivityType = "REJECT_BORROW"
 	ActivityBorrowedBorrow ActivityType = "BORROWED_BORROW"

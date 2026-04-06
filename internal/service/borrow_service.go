@@ -21,6 +21,7 @@ type BorrowService struct {
 	txManager  *repository.TxManager
 	repo       *repository.BorrowRepository
 	itemRepo   *repository.ItemRepository
+	userRepo   *repository.UserRepository
 	logRepo    *repository.LogActivityRepository
 	returnRepo *repository.ReturnRepository
 }
@@ -29,13 +30,17 @@ func NewBorrowService(
 	txManager *repository.TxManager,
 	repo *repository.BorrowRepository,
 	itemRepo *repository.ItemRepository,
+	userRepo *repository.UserRepository,
 	logRepo *repository.LogActivityRepository,
+	returnRepo *repository.ReturnRepository,
 ) *BorrowService {
 	return &BorrowService{
-		txManager: txManager,
-		repo:      repo,
-		itemRepo:  itemRepo,
-		logRepo:   logRepo,
+		txManager:  txManager,
+		repo:       repo,
+		itemRepo:   itemRepo,
+		userRepo:   userRepo,
+		logRepo:    logRepo,
+		returnRepo: returnRepo,
 	}
 }
 
@@ -115,7 +120,7 @@ func (s *BorrowService) GetCardDataByUser(ctx context.Context, currentUser model
 	}, nil
 }
 
-func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req dto.BorrowCreateRequest) (dto.BorrowResponse, error) {
+func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req dto.BorrowRequest) (dto.BorrowResponse, error) {
 	var createdBorrow *model.Borrow
 
 	now := time.Now().Truncate(24 * time.Hour)
@@ -157,6 +162,103 @@ func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req 
 	}
 
 	return mapper.ToBorrowResponse(createdBorrow), nil
+}
+
+func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.User, req dto.BorrowForUserRequest) (dto.BorrowResponse, error) {
+	var createdBorrow *model.Borrow
+
+	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txBorrowRepo := s.repo.WithTx(tx)
+		txItemRepo := s.itemRepo.WithTx(tx)
+		txUserRepo := s.userRepo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		user, err := txUserRepo.GetByID(ctx, int(req.UserID))
+		if user == nil {
+			return errors.NotFound(fmt.Sprintf("User not found with ID: %d", req.UserID))
+		}
+		if err != nil {
+			return err
+		}
+
+		item, err := txItemRepo.GetByID(ctx, int(req.ItemID))
+		if item == nil {
+			return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", req.ItemID))
+		}
+		if err != nil {
+			return err
+		}
+
+		borrow := mapper.ToBorrowModelForUser(req, *user, *item)
+		if err := txBorrowRepo.Create(ctx, borrow); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityCreateBorrow)
+		if err := txLogRepo.Create(ctx, log); err != nil {
+			return err
+		}
+
+		createdBorrow = borrow
+
+		return nil
+	}); err != nil {
+		return dto.BorrowResponse{}, err
+	}
+
+	return mapper.ToBorrowResponse(createdBorrow), nil
+}
+
+func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest, id int, currentUser model.User) (dto.BorrowResponse, error) {
+	var updatedBorrow *model.Borrow
+
+	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txBorrowRepo := s.repo.WithTx(tx)
+		txItemRepo := s.itemRepo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		borrow, err := txBorrowRepo.GetByID(ctx, id)
+		if borrow == nil {
+			return errors.NotFound(fmt.Sprintf("Borrow not found with ID: %d", id))
+		}
+		if err != nil {
+			return err
+		}
+
+		if borrow.Status != model.BorrowStatusPending {
+			return errors.BadRequest("Borrow status is not pending")
+		}
+
+		item := &borrow.Item
+		if borrow.ItemID != req.ItemID {
+			var err error
+			item, err := txItemRepo.GetByID(ctx, int(req.ItemID))
+			if item == nil {
+				return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", req.ItemID))
+			}
+			if err != nil {
+				return err
+			}
+		}
+
+		mapper.UpdateBorrowModel(borrow, req, *item)
+		if err := txBorrowRepo.Update(ctx, borrow); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityUpdateBorrow)
+		if err := txLogRepo.Create(ctx, log); err != nil {
+			return err
+		}
+
+		updatedBorrow = borrow
+
+		return nil
+	}); err != nil {
+		return dto.BorrowResponse{}, err
+	}
+
+	return mapper.ToBorrowResponse(updatedBorrow), nil
 }
 
 func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id int, req dto.BorrowApprovalRequest) (dto.BorrowResponse, error) {

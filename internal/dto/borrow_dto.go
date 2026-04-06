@@ -34,7 +34,7 @@ type (
 		UpdatedAt    time.Time          `json:"updatedAt"`
 	}
 
-	BorrowCreateRequest struct {
+	BorrowRequest struct {
 		ItemID     uint            `json:"itemId" binding:"required,gt=0"`
 		Quantity   int             `json:"quantity" form:"quantity" binding:"required,gt=0"`
 		Purpose    string          `json:"purpose" binding:"required"`
@@ -42,13 +42,8 @@ type (
 		ReturnDate *types.DateOnly `json:"returnDate" binding:"required"`
 	}
 
-	BorrowCreateWithUserRequest struct {
-		BorrowCreateRequest
-		UserID uint `json:"userId" binding:"required,gt=0"`
-	}
-
-	BorrowUpdateRequest struct {
-		BorrowCreateRequest
+	BorrowForUserRequest struct {
+		BorrowRequest
 		UserID uint `json:"userId" binding:"required,gt=0"`
 	}
 

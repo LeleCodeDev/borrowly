@@ -45,7 +45,7 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 	}
 }
 
-func ToBorrowModel(req dto.BorrowCreateRequest, user model.User, item model.Item) *model.Borrow {
+func ToBorrowModel(req dto.BorrowRequest, user model.User, item model.Item) *model.Borrow {
 	return &model.Borrow{
 		UserID:     user.ID,
 		User:       user,
@@ -57,4 +57,27 @@ func ToBorrowModel(req dto.BorrowCreateRequest, user model.User, item model.Item
 		ReturnDate: req.ReturnDate.Time,
 		Status:     model.BorrowStatusPending,
 	}
+}
+
+func ToBorrowModelForUser(req dto.BorrowForUserRequest, user model.User, item model.Item) *model.Borrow {
+	return &model.Borrow{
+		UserID:     user.ID,
+		User:       user,
+		ItemID:     item.ID,
+		Item:       item,
+		Purpose:    req.Purpose,
+		Quantity:   req.Quantity,
+		BorrowDate: req.BorrowDate.Time,
+		ReturnDate: req.ReturnDate.Time,
+		Status:     model.BorrowStatusPending,
+	}
+}
+
+func UpdateBorrowModel(borrow *model.Borrow, req dto.BorrowRequest, item model.Item) {
+	borrow.ItemID = item.ID
+	borrow.Item = item
+	borrow.Quantity = req.Quantity
+	borrow.Purpose = req.Purpose
+	borrow.BorrowDate = req.BorrowDate.Time
+	borrow.ReturnDate = req.ReturnDate.Time
 }

@@ -104,7 +104,7 @@ func (h *BorrowHandler) GetBorrowCardByUser(c *gin.Context) {
 }
 
 func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
-	var req dto.BorrowCreateRequest
+	var req dto.BorrowRequest
 
 	if err := c.ShouldBind(&req); err != nil {
 		if valErrors, ok := errors.GetValidationError(err); ok {
@@ -126,6 +126,61 @@ func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusCreated, "Borrow successfully created", borrow)
+}
+
+func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
+	var req dto.BorrowForUserRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	borrow, err := h.Service.CreateForUser(ctx, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusCreated, "Borrow successfully created", borrow)
+}
+
+func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	var req dto.BorrowRequest
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	borrow, err := h.Service.UpdateForUser(ctx, req, id, currentUser)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Borrow successfully updated", borrow)
 }
 
 func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {

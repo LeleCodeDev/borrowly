@@ -50,7 +50,7 @@ func NewApp() *App {
 	authService := service.NewAuthService(txManager, userRepo)
 	categoryService := service.NewCategoryService(txManager, categoryRepo, itemRepo, borrowRepo, logRepo)
 	itemService := service.NewItemService(txManager, itemRepo, categoryRepo, logRepo)
-	borrowService := service.NewBorrowService(txManager, borrowRepo, itemRepo, logRepo)
+	borrowService := service.NewBorrowService(txManager, borrowRepo, itemRepo, userRepo, logRepo, returnRepo)
 	returnService := service.NewReturnService(returnRepo)
 	dashboardService := service.NewDashboardService(itemRepo, categoryRepo, userRepo, borrowRepo, returnRepo)
 
