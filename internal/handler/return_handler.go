@@ -66,7 +66,7 @@ func (h *ReturnHandler) GetAllReturnsByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	returns, total, err := h.service.UserGetAll(ctx, currentUser, req)
+	returns, total, err := h.service.GetAllByUser(ctx, currentUser, req)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -76,10 +76,10 @@ func (h *ReturnHandler) GetAllReturnsByUser(c *gin.Context) {
 	response.Paginated(c, http.StatusOK, "All returns successfully fetched", returns, pagination)
 }
 
-func (h *ReturnHandler) GetReturnDashboard(c *gin.Context) {
+func (h *ReturnHandler) GetReturnCard(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	dashboardData, err := h.service.GetDashboardData(ctx)
+	dashboardData, err := h.service.GetCardData(ctx)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -88,15 +88,15 @@ func (h *ReturnHandler) GetReturnDashboard(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", dashboardData)
 }
 
-func (h *ReturnHandler) GetReturnDashboardByUser(c *gin.Context) {
+func (h *ReturnHandler) GetReturnCardByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	dashboardData, err := h.service.GetUserDashboardData(ctx, currentUser)
+	cardData, err := h.service.GetCardDataByUser(ctx, currentUser)
 	if err != nil {
 		response.HandleError(c, err)
 		return
 	}
 
-	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", dashboardData)
+	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", cardData)
 }

@@ -68,7 +68,7 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	borrows, total, err := h.Service.UserGetAll(ctx, currentUser, req)
+	borrows, total, err := h.Service.GetAllByUser(ctx, currentUser, req)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -78,10 +78,10 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	response.Paginated(c, http.StatusOK, "All borrows successfully fetched", borrows, pagination)
 }
 
-func (h *BorrowHandler) GetBorrowDashboard(c *gin.Context) {
+func (h *BorrowHandler) GetBorrowCard(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	dashboardData, err := h.Service.GetDashboardData(ctx)
+	dashboardData, err := h.Service.GetCardData(ctx)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -90,21 +90,21 @@ func (h *BorrowHandler) GetBorrowDashboard(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
 }
 
-func (h *BorrowHandler) GetBorrowDashboardByUser(c *gin.Context) {
+func (h *BorrowHandler) GetBorrowCardByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	dashboardData, err := h.Service.GetUserDashboardData(ctx, currentUser)
+	cardData, err := h.Service.GetCardDataByUser(ctx, currentUser)
 	if err != nil {
 		response.HandleError(c, err)
 		return
 	}
 
-	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
+	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", cardData)
 }
 
 func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
-	var req dto.BorrowRequest
+	var req dto.BorrowCreateRequest
 
 	if err := c.ShouldBind(&req); err != nil {
 		if valErrors, ok := errors.GetValidationError(err); ok {

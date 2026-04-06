@@ -45,7 +45,7 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 	}
 }
 
-func ToBorrowModel(req dto.BorrowRequest, user model.User, item model.Item) *model.Borrow {
+func ToBorrowModel(req dto.BorrowCreateRequest, user model.User, item model.Item) *model.Borrow {
 	return &model.Borrow{
 		UserID:     user.ID,
 		User:       user,

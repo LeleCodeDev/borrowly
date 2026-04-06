@@ -27,7 +27,7 @@ type (
 		BorrowerNote *string `json:"borrowerNote"`
 	}
 
-	ReturnDashboardResponse struct {
+	ReturnCardResponse struct {
 		TotalReturn  int64 `json:"totalReturn"`
 		TotalOverdue int64 `json:"totalOverdue"`
 	}

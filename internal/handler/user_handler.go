@@ -67,10 +67,10 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 	response.Success(c, http.StatusOK, "User successfully fetched", user)
 }
 
-func (h *UserHandler) GetUserDashboard(c *gin.Context) {
+func (h *UserHandler) GetUserCard(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	dashboardData, err := h.service.GetDashboardData(ctx)
+	dashboardData, err := h.service.GetCardData(ctx)
 	if err != nil {
 		response.HandleError(c, err)
 		return

@@ -35,7 +35,7 @@ func (s *ReturnService) GetAll(ctx context.Context, req dto.ReturnQuery) ([]dto.
 	return responses, total, nil
 }
 
-func (s *ReturnService) UserGetAll(ctx context.Context, currentUser model.User, req dto.ReturnQuery) ([]dto.ReturnResponse, int64, error) {
+func (s *ReturnService) GetAllByUser(ctx context.Context, currentUser model.User, req dto.ReturnQuery) ([]dto.ReturnResponse, int64, error) {
 	returns, total, err := s.repo.GetAllByUserID(ctx, currentUser.ID, req)
 	if err != nil {
 		return nil, 0, err
@@ -50,35 +50,35 @@ func (s *ReturnService) UserGetAll(ctx context.Context, currentUser model.User, 
 	return responses, total, nil
 }
 
-func (s *ReturnService) GetDashboardData(ctx context.Context) (dto.ReturnDashboardResponse, error) {
+func (s *ReturnService) GetCardData(ctx context.Context) (dto.ReturnCardResponse, error) {
 	totalReturn, err := s.repo.CountAll(ctx)
 	if err != nil {
-		return dto.ReturnDashboardResponse{}, err
+		return dto.ReturnCardResponse{}, err
 	}
 
 	totalOverdue, err := s.repo.CountAllIsOverdue(ctx)
 	if err != nil {
-		return dto.ReturnDashboardResponse{}, err
+		return dto.ReturnCardResponse{}, err
 	}
 
-	return dto.ReturnDashboardResponse{
+	return dto.ReturnCardResponse{
 		TotalReturn:  totalReturn,
 		TotalOverdue: totalOverdue,
 	}, nil
 }
 
-func (s *ReturnService) GetUserDashboardData(ctx context.Context, currentUser model.User) (dto.ReturnDashboardResponse, error) {
+func (s *ReturnService) GetCardDataByUser(ctx context.Context, currentUser model.User) (dto.ReturnCardResponse, error) {
 	totalReturn, err := s.repo.CountByUserID(ctx, currentUser.ID)
 	if err != nil {
-		return dto.ReturnDashboardResponse{}, err
+		return dto.ReturnCardResponse{}, err
 	}
 
 	totalOverdue, err := s.repo.CountAllIsOverdueByUserID(ctx, currentUser.ID)
 	if err != nil {
-		return dto.ReturnDashboardResponse{}, err
+		return dto.ReturnCardResponse{}, err
 	}
 
-	return dto.ReturnDashboardResponse{
+	return dto.ReturnCardResponse{
 		TotalReturn:  totalReturn,
 		TotalOverdue: totalOverdue,
 	}, nil

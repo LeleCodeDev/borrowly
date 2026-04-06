@@ -68,10 +68,10 @@ func (h *ItemHandler) GetItemByID(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Item successfully fetched", item)
 }
 
-func (h *ItemHandler) GetItemDashboard(c *gin.Context) {
+func (h *ItemHandler) GetItemCard(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	dashboardData, err := h.service.GetDashboardData(ctx)
+	dashboardData, err := h.service.GetCardData(ctx)
 	if err != nil {
 		response.HandleError(c, err)
 		return
