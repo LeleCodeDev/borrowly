@@ -137,7 +137,7 @@ func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
 			return
 		}
 
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.Error(c, http.StatusInternalServerError, "Server error", err)
 		return
 	}
 
@@ -290,6 +290,24 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusOK, "Borrow successfully returned", borrow)
+}
+
+func (h *BorrowHandler) DeleteBorrow(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	if err := h.Service.Delete(ctx, id, currentUser); err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success[any](c, http.StatusOK, "Borrow successfully deleted", nil)
 }
 
 func (h *BorrowHandler) GenerateBorrowPDF(c *gin.Context) {

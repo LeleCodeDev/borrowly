@@ -66,6 +66,7 @@ func (a *App) RegisterRoute() {
 
 		admin.POST("/borrows", a.BorrowHandler.CreateBorrowForUser)
 		admin.PUT("/borrows/:id", a.BorrowHandler.UpdateBorrowForUser)
+		admin.DELETE("/borrows/:id", a.BorrowHandler.DeleteBorrow)
 	}
 
 	borrower := authenticated.Group("")

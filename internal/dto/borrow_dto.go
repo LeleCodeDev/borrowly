@@ -38,8 +38,8 @@ type (
 		ItemID     uint            `json:"itemId" binding:"required,gt=0"`
 		Quantity   int             `json:"quantity" form:"quantity" binding:"required,gt=0"`
 		Purpose    string          `json:"purpose" binding:"required"`
-		BorrowDate *types.DateOnly `json:"borrowDate" binding:"required"`
-		ReturnDate *types.DateOnly `json:"returnDate" binding:"required"`
+		BorrowDate *types.DateOnly `json:"borrowDate" binding:"required" time_format:"2006-01-02"`
+		ReturnDate *types.DateOnly `json:"returnDate" binding:"required" time_format:"2006-01-02"`
 	}
 
 	BorrowForUserRequest struct {
