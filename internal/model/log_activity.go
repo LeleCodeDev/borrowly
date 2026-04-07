@@ -26,6 +26,7 @@ const (
 	ActivityRejectBorrow   ActivityType = "REJECT_BORROW"
 	ActivityBorrowedBorrow ActivityType = "BORROWED_BORROW"
 	ActivityReturnBorrow   ActivityType = "RETURN_BORROW"
+	ActivityDeleteBorrow   ActivityType = "DELETE_BORROW"
 
 	ActivityReturnItem    ActivityType = "RETURN_ITEM"
 	ActivityConfirmReturn ActivityType = "CONFIRM_RETURN"

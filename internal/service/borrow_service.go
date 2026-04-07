@@ -460,6 +460,33 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id i
 	return mapper.ToBorrowResponse(returnedBorrow), nil
 }
 
+func (s *BorrowService) Delete(ctx context.Context, id int, currentUser model.User) error {
+	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txBorrowRepo := s.repo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		borrow, err := txBorrowRepo.GetByID(ctx, id)
+		if borrow == nil {
+			return errors.NotFound(fmt.Sprintf("Borrow not found with ID: %d", id))
+		}
+		if err != nil {
+			return err
+		}
+
+		if borrow.Status == model.BorrowStatusApproved ||
+			borrow.Status == model.BorrowStatusBorrowed {
+			return errors.BadRequest("Borrow is currently active")
+		}
+
+		if err := txBorrowRepo.Delete(ctx, borrow); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteBorrow)
+		return txLogRepo.Create(ctx, log)
+	})
+}
+
 func (s *BorrowService) GeneratePDF(ctx context.Context, req dto.BorrowQuery) ([]byte, error) {
 	borrows, _, err := s.repo.GetAll(ctx, req)
 	if err != nil {

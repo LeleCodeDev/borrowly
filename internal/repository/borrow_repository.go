@@ -172,3 +172,7 @@ func (r *BorrowRepository) CountByStatusAndUserID(ctx context.Context, status mo
 	}
 	return count, nil
 }
+
+func (r *BorrowRepository) Delete(ctx context.Context, borrow *model.Borrow) error {
+	return r.db.WithContext(ctx).Delete(borrow).Error
+}
