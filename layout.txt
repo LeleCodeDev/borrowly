@@ -1,0 +1,216 @@
+.
+├── backend
+│   ├── cmd
+│   │   ├── migration
+│   │   │   └── main.go
+│   │   ├── seeder
+│   │   │   └── main.go
+│   │   └── server
+│   │       └── main.go
+│   ├── internal
+│   │   ├── bootstrap
+│   │   │   ├── app.go
+│   │   │   └── route.go
+│   │   ├── config
+│   │   │   └── config.go
+│   │   ├── database
+│   │   │   └── database.go
+│   │   ├── dto
+│   │   │   ├── auth_dto.go
+│   │   │   ├── borrow_dto.go
+│   │   │   ├── category_dto.go
+│   │   │   ├── dashboard_dto.go
+│   │   │   ├── item_dto.go
+│   │   │   ├── log_activity_dto.go
+│   │   │   ├── pagination_query.go
+│   │   │   ├── return_dto.go
+│   │   │   ├── sort_query.go
+│   │   │   └── user_dto.go
+│   │   ├── handler
+│   │   │   ├── auth_handler.go
+│   │   │   ├── borrow_handler.go
+│   │   │   ├── category_handler.go
+│   │   │   ├── dashboard_handler.go
+│   │   │   ├── item_handler.go
+│   │   │   ├── log_handler.go
+│   │   │   ├── return_handler.go
+│   │   │   └── user_handler.go
+│   │   ├── mapper
+│   │   │   ├── auth_mapper.go
+│   │   │   ├── borrow_mapper.go
+│   │   │   ├── category_mapper.go
+│   │   │   ├── item_mapper.go
+│   │   │   ├── log_activity_mapper.go
+│   │   │   ├── return_mapper.go
+│   │   │   └── user_mapper.go
+│   │   ├── middleware
+│   │   │   ├── auth_middleware.go
+│   │   │   └── role_middleware.go
+│   │   ├── model
+│   │   │   ├── borrow.go
+│   │   │   ├── category.go
+│   │   │   ├── item.go
+│   │   │   ├── log_activity.go
+│   │   │   ├── return.go
+│   │   │   └── user.go
+│   │   ├── repository
+│   │   │   ├── borrow_repository.go
+│   │   │   ├── category_repository.go
+│   │   │   ├── item_repository.go
+│   │   │   ├── log_activity_repository.go
+│   │   │   ├── return_repository.go
+│   │   │   ├── tx_manager.go
+│   │   │   └── user_repository.go
+│   │   └── service
+│   │       ├── auth_service.go
+│   │       ├── borrow_service.go
+│   │       ├── category_service.go
+│   │       ├── dashboard_service.go
+│   │       ├── item_service.go
+│   │       ├── log_activity_service.go
+│   │       ├── return_service.go
+│   │       └── user_service.go
+│   ├── pkg
+│   │   ├── errors
+│   │   │   ├── service_error.go
+│   │   │   └── validation_error.go
+│   │   ├── image
+│   │   │   └── image.go
+│   │   ├── jwt
+│   │   │   └── jwt.go
+│   │   ├── pagination
+│   │   │   └── pagination.go
+│   │   ├── response
+│   │   │   └── response.go
+│   │   └── types
+│   │       └── dateOnly.go
+│   ├── template
+│   │   └── report.html
+│   ├── tmp
+│   │   ├── build-errors.log
+│   │   └── main
+│   ├── uploads
+│   │   └── items
+│   ├── go.mod
+│   └── go.sum
+├── frontend
+│   ├── public
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── api
+│   │   │   ├── api.ts
+│   │   │   ├── authApi.ts
+│   │   │   ├── borrowApi.ts
+│   │   │   ├── categoryApi.ts
+│   │   │   ├── dashboardApi.ts
+│   │   │   ├── itemApi.ts
+│   │   │   ├── logApi.ts
+│   │   │   ├── returnApi.ts
+│   │   │   └── userApi.ts
+│   │   ├── assets
+│   │   │   └── react.svg
+│   │   ├── components
+│   │   │   ├── borrow
+│   │   │   │   ├── BorrowerBorrowDetail.tsx
+│   │   │   │   ├── CreateBorrowModal.tsx
+│   │   │   │   └── OfficerBorrowDetail.tsx
+│   │   │   ├── category
+│   │   │   │   └── CategoryCreateUpdateModal.tsx
+│   │   │   ├── item
+│   │   │   │   └── ItemCreateUpdateModal.tsx
+│   │   │   ├── return
+│   │   │   │   └── CreateReturnModal.tsx
+│   │   │   ├── ui
+│   │   │   │   ├── alert-dialog.tsx
+│   │   │   │   ├── alert.tsx
+│   │   │   │   ├── badge.tsx
+│   │   │   │   ├── BorrowStatusBadge.tsx
+│   │   │   │   ├── button.tsx
+│   │   │   │   ├── ButtonThemeSwitcher.tsx
+│   │   │   │   ├── card.tsx
+│   │   │   │   ├── combobox.tsx
+│   │   │   │   ├── command.tsx
+│   │   │   │   ├── dialog.tsx
+│   │   │   │   ├── dropdown-menu.tsx
+│   │   │   │   ├── input-group.tsx
+│   │   │   │   ├── input.tsx
+│   │   │   │   ├── label.tsx
+│   │   │   │   ├── pagination.tsx
+│   │   │   │   ├── popover.tsx
+│   │   │   │   ├── select.tsx
+│   │   │   │   ├── separator.tsx
+│   │   │   │   ├── sheet.tsx
+│   │   │   │   ├── sidebar.tsx
+│   │   │   │   ├── skeleton.tsx
+│   │   │   │   ├── sonner.tsx
+│   │   │   │   ├── spinner.tsx
+│   │   │   │   ├── table.tsx
+│   │   │   │   ├── textarea.tsx
+│   │   │   │   ├── theme-provider.tsx
+│   │   │   │   └── tooltip.tsx
+│   │   │   ├── user
+│   │   │   │   └── UserCreateUpdateModal.tsx
+│   │   │   ├── Layout.tsx
+│   │   │   └── Sidebar.tsx
+│   │   ├── guards
+│   │   │   └── AuthGuard.tsx
+│   │   ├── hooks
+│   │   │   ├── api
+│   │   │   │   ├── useAuth.ts
+│   │   │   │   ├── useBorrow.ts
+│   │   │   │   ├── useCategory.ts
+│   │   │   │   ├── useDashboard.ts
+│   │   │   │   ├── useItem.ts
+│   │   │   │   ├── useLog.ts
+│   │   │   │   ├── useReturn.ts
+│   │   │   │   └── useUser.ts
+│   │   │   └── use-mobile.ts
+│   │   ├── lib
+│   │   │   └── utils.ts
+│   │   ├── pages
+│   │   │   ├── admin
+│   │   │   │   ├── AdminBorrowRequestPage.tsx
+│   │   │   │   ├── AdminCategoryPage.tsx
+│   │   │   │   ├── AdminDashboard.tsx
+│   │   │   │   ├── AdminItemPage.tsx
+│   │   │   │   ├── AdminLogPage.tsx
+│   │   │   │   ├── AdminReturnPage.tsx
+│   │   │   │   └── AdminUserPage.tsx
+│   │   │   ├── auth
+│   │   │   │   ├── Login.tsx
+│   │   │   │   └── Register.tsx
+│   │   │   ├── borrower
+│   │   │   │   ├── BorrowerBorrowPage.tsx
+│   │   │   │   ├── BorrowerDashboard.tsx
+│   │   │   │   ├── BorrowerItemPage.tsx
+│   │   │   │   └── BorrowerReturnPage.tsx
+│   │   │   └── officer
+│   │   │       ├── OfficerBorrowRequestPage.tsx
+│   │   │       ├── OfficerDashboard.tsx
+│   │   │       └── OfficerReturnPage.tsx
+│   │   ├── types
+│   │   │   ├── apiResponse.ts
+│   │   │   ├── auth.ts
+│   │   │   ├── baseQuery.ts
+│   │   │   ├── borrow.ts
+│   │   │   ├── category.ts
+│   │   │   ├── dashboard.ts
+│   │   │   ├── item.ts
+│   │   │   ├── log.ts
+│   │   │   ├── pagination.ts
+│   │   │   ├── return.ts
+│   │   │   └── user.ts
+│   │   ├── App.tsx
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── components.json
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+└── layout.txt
