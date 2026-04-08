@@ -2,12 +2,16 @@
 package image
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 
 	"github.com/google/uuid"
+	"github.com/lelecodedev/borrowly/pkg/errors"
 )
 
 func SaveImage(basePath string, file *multipart.FileHeader) (*string, error) {
@@ -15,7 +19,12 @@ func SaveImage(basePath string, file *multipart.FileHeader) (*string, error) {
 		return nil, err
 	}
 
+	allowedExts := []string{"jpeg", "png", "jpg"}
 	ext := filepath.Ext(file.Filename)
+	if !slices.Contains(allowedExts, strings.TrimPrefix(ext, ".")) {
+		return nil, errors.BadRequest(fmt.Sprintf("File must be: %v", strings.Join(allowedExts, ", ")))
+	}
+
 	filename := uuid.New().String() + ext
 	path := filepath.Join(basePath, filename)
 
