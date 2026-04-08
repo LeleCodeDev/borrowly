@@ -76,7 +76,6 @@ func (a *App) RegisterRoute() {
 	borrower := authenticated.Group("")
 	borrower.Use(middleware.RoleMiddleware(model.RoleBorrower))
 	{
-
 		borrower.GET("/borrower/dashboard", a.DashboardHandler.GetAdminDashboard)
 
 		borrower.GET("/my-borrows", a.BorrowHandler.GetAllBorrowsByUser)
@@ -92,7 +91,6 @@ func (a *App) RegisterRoute() {
 	officer := authenticated.Group("")
 	officer.Use(middleware.RoleMiddleware(model.RoleOfficer))
 	{
-
 		officer.GET("/officer/dashboard", a.DashboardHandler.GetOfficerDashboard)
 
 		officer.PUT("/borrows/:id/approve", a.BorrowHandler.ApproveBorrow)
