@@ -39,7 +39,7 @@ type (
 		UpdatedAt time.Time      `json:"updatedAt"`
 	}
 
-	UserDashboardResponse struct {
+	UserCardResponse struct {
 		TotalBorrowers int64 `json:"totalBorrowers"`
 		TotalOfficers  int64 `json:"totalOfficers"`
 	}

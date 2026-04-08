@@ -37,16 +37,21 @@ type (
 	BorrowRequest struct {
 		ItemID     uint            `json:"itemId" binding:"required,gt=0"`
 		Quantity   int             `json:"quantity" form:"quantity" binding:"required,gt=0"`
-		Purpose    string          `json:"purpose" binding:"required"`
-		BorrowDate *types.DateOnly `json:"borrowDate" binding:"required"`
-		ReturnDate *types.DateOnly `json:"returnDate" binding:"required"`
+		Purpose    string          `json:"purpose"`
+		BorrowDate *types.DateOnly `json:"borrowDate" binding:"required" time_format:"2006-01-02"`
+		ReturnDate *types.DateOnly `json:"returnDate" binding:"required" time_format:"2006-01-02"`
+	}
+
+	BorrowForUserRequest struct {
+		BorrowRequest
+		UserID uint `json:"userId" binding:"required,gt=0"`
 	}
 
 	BorrowApprovalRequest struct {
 		OfficerNote *string `json:"officerNote"`
 	}
 
-	BorrowDashboardResponse struct {
+	BorrowCardResponse struct {
 		TotalPending  int64 `json:"totalPending"`
 		TotalApproved int64 `json:"totalApproved"`
 		TotalRejected int64 `json:"totalRejected"`

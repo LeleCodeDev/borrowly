@@ -42,7 +42,7 @@ type (
 		Quantity    *int   `json:"quantity" form:"quantity" binding:"required"`
 	}
 
-	ItemDashboardResponse struct {
+	ItemCardResponse struct {
 		AvailableItems   int64 `json:"availableItems"`
 		UnavailableItems int64 `json:"unavailableItems"`
 	}

@@ -3,6 +3,8 @@ package dto
 
 import (
 	"time"
+
+	"github.com/lelecodedev/borrowly/pkg/types"
 )
 
 type (
@@ -27,7 +29,16 @@ type (
 		BorrowerNote *string `json:"borrowerNote"`
 	}
 
-	ReturnDashboardResponse struct {
+	ReturnCreateForUserRequest struct {
+		BorrowID   uint            `json:"borrowId" form:"borrowId" binding:"required,gt=0"`
+		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
+	}
+
+	ReturnUpdateForUserRequest struct {
+		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
+	}
+
+	ReturnCardResponse struct {
 		TotalReturn  int64 `json:"totalReturn"`
 		TotalOverdue int64 `json:"totalOverdue"`
 	}

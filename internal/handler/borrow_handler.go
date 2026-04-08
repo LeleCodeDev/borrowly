@@ -68,7 +68,7 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	borrows, total, err := h.Service.UserGetAll(ctx, currentUser, req)
+	borrows, total, err := h.Service.GetAllByUser(ctx, currentUser, req)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -78,10 +78,10 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	response.Paginated(c, http.StatusOK, "All borrows successfully fetched", borrows, pagination)
 }
 
-func (h *BorrowHandler) GetBorrowDashboard(c *gin.Context) {
+func (h *BorrowHandler) GetBorrowCard(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	dashboardData, err := h.Service.GetDashboardData(ctx)
+	dashboardData, err := h.Service.GetCardData(ctx)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -90,17 +90,17 @@ func (h *BorrowHandler) GetBorrowDashboard(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
 }
 
-func (h *BorrowHandler) GetBorrowDashboardByUser(c *gin.Context) {
+func (h *BorrowHandler) GetBorrowCardByUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	currentUser := c.MustGet("user").(model.User)
 
-	dashboardData, err := h.Service.GetUserDashboardData(ctx, currentUser)
+	cardData, err := h.Service.GetCardDataByUser(ctx, currentUser)
 	if err != nil {
 		response.HandleError(c, err)
 		return
 	}
 
-	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", dashboardData)
+	response.Success(c, http.StatusOK, "Borrow dashboard data successfully fetched", cardData)
 }
 
 func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
@@ -126,6 +126,61 @@ func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusCreated, "Borrow successfully created", borrow)
+}
+
+func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
+	var req dto.BorrowForUserRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	borrow, err := h.Service.CreateForUser(ctx, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusCreated, "Borrow successfully created", borrow)
+}
+
+func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	var req dto.BorrowRequest
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	borrow, err := h.Service.UpdateForUser(ctx, req, id, currentUser)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Borrow successfully updated", borrow)
 }
 
 func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
@@ -235,6 +290,24 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusOK, "Borrow successfully returned", borrow)
+}
+
+func (h *BorrowHandler) DeleteBorrow(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	if err := h.Service.Delete(ctx, id, currentUser); err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success[any](c, http.StatusOK, "Borrow successfully deleted", nil)
 }
 
 func (h *BorrowHandler) GenerateBorrowPDF(c *gin.Context) {

@@ -40,3 +40,17 @@ func ToReturnModel(
 		Fine:         fine,
 	}
 }
+
+func ToReturnModelForUser(
+	borrow *model.Borrow,
+	returnDate time.Time,
+	req dto.ReturnCreateForUserRequest,
+	fine *float64,
+) *model.Return {
+	return &model.Return{
+		BorrowID:   borrow.ID,
+		Borrow:     *borrow,
+		ReturnDate: returnDate,
+		Fine:       fine,
+	}
+}

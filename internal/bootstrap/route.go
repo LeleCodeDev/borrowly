@@ -35,11 +35,10 @@ func (a *App) RegisterRoute() {
 	adminAndOfficer.Use(middleware.RoleMiddleware(model.RoleAdmin, model.RoleOfficer))
 	{
 		adminAndOfficer.GET("/borrows", a.BorrowHandler.GetAllBorrows)
-		adminAndOfficer.GET("/borrows/dashboard", a.BorrowHandler.GetBorrowDashboard)
-		adminAndOfficer.GET("/borrows/download-pdf", a.BorrowHandler.GenerateBorrowPDF)
+		adminAndOfficer.GET("/borrows/card", a.BorrowHandler.GetBorrowCard)
 
 		adminAndOfficer.GET("/returns", a.ReturnHandler.GetAllReturns)
-		adminAndOfficer.GET("/returns/dashboard", a.ReturnHandler.GetReturnDashboard)
+		adminAndOfficer.GET("/returns/card", a.ReturnHandler.GetReturnCard)
 	}
 
 	admin := authenticated.Group("")
@@ -51,7 +50,7 @@ func (a *App) RegisterRoute() {
 
 		admin.GET("/users", a.UserHandler.GetAllUsers)
 		admin.GET("/users/:id", a.UserHandler.GetUserByID)
-		admin.GET("/users/dashboard", a.UserHandler.GetUserDashboard)
+		admin.GET("/users/card", a.UserHandler.GetUserCard)
 		admin.POST("/users", a.UserHandler.CreateUser)
 		admin.PUT("/users/:id", a.UserHandler.UpdateUser)
 		admin.DELETE("/users/:id", a.UserHandler.DeleteUser)
@@ -61,25 +60,33 @@ func (a *App) RegisterRoute() {
 		admin.DELETE("/categories/:id", a.CategoryHandler.DeleteCategory)
 
 		admin.POST("/items", a.ItemHandler.CreateItem)
-		admin.GET("/items/dashboard", a.ItemHandler.GetItemDashboard)
+		admin.GET("/items/card", a.ItemHandler.GetItemCard)
 		admin.PUT("/items/:id", a.ItemHandler.UpdateItem)
 		admin.DELETE("/items/:id", a.ItemHandler.DeleteItem)
+
+		admin.POST("/borrows", a.BorrowHandler.CreateBorrowForUser)
+		admin.PUT("/borrows/:id", a.BorrowHandler.UpdateBorrowForUser)
+		admin.DELETE("/borrows/:id", a.BorrowHandler.DeleteBorrow)
+
+		admin.POST("/returns", a.ReturnHandler.CreateReturnForUser)
+		admin.PUT("/returns/:id", a.ReturnHandler.UpdateReturnForUser)
+		admin.DELETE("/returns/:id", a.ReturnHandler.DeleteReturn)
 	}
 
 	borrower := authenticated.Group("")
 	borrower.Use(middleware.RoleMiddleware(model.RoleBorrower))
 	{
 
-		borrower.GET("/borrower/dashboard", a.DashboardHandler.GetBorrowerDashboard)
+		borrower.GET("/borrower/dashboard", a.DashboardHandler.GetAdminDashboard)
 
 		borrower.GET("/my-borrows", a.BorrowHandler.GetAllBorrowsByUser)
-		borrower.GET("/my-borrows/dashboard", a.BorrowHandler.GetBorrowDashboardByUser)
-		borrower.POST("/borrows", a.BorrowHandler.CreateBorrow)
-		borrower.PUT("/borrows/:id/confirm", a.BorrowHandler.ConfirmBorrow)
-		borrower.PUT("/borrows/:id/return", a.BorrowHandler.ReturnedBorrow)
+		borrower.GET("/my-borrows/card", a.BorrowHandler.GetBorrowCardByUser)
+		borrower.POST("/my-borrows", a.BorrowHandler.CreateBorrow)
+		borrower.PUT("/my-borrows/:id/confirm", a.BorrowHandler.ConfirmBorrow)
+		borrower.PUT("/my-borrows/:id/return", a.BorrowHandler.ReturnedBorrow)
 
 		borrower.GET("/my-returns", a.ReturnHandler.GetAllReturnsByUser)
-		borrower.GET("/my-returns/dashboard", a.ReturnHandler.GetReturnDashboardByUser)
+		borrower.GET("/my-returns/card", a.ReturnHandler.GetReturnCardByUser)
 	}
 
 	officer := authenticated.Group("")
@@ -90,5 +97,6 @@ func (a *App) RegisterRoute() {
 
 		officer.PUT("/borrows/:id/approve", a.BorrowHandler.ApproveBorrow)
 		officer.PUT("/borrows/:id/reject", a.BorrowHandler.RejectBorrow)
+		officer.GET("/borrows/download-pdf", a.BorrowHandler.GenerateBorrowPDF)
 	}
 }

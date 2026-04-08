@@ -3,6 +3,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
@@ -25,6 +26,14 @@ func (r *ReturnRepository) WithTx(tx *gorm.DB) *ReturnRepository {
 
 func (r *ReturnRepository) Create(ctx context.Context, returnBorrow *model.Return) error {
 	return r.db.WithContext(ctx).Create(returnBorrow).Error
+}
+
+func (r *ReturnRepository) Update(ctx context.Context, returnBorrow *model.Return) error {
+	return r.db.WithContext(ctx).Save(returnBorrow).Error
+}
+
+func (r *ReturnRepository) Delete(ctx context.Context, returnBorrow *model.Return) error {
+	return r.db.WithContext(ctx).Delete(returnBorrow).Error
 }
 
 func (r *ReturnRepository) GetAll(ctx context.Context, req dto.ReturnQuery) ([]model.Return, int64, error) {
@@ -98,6 +107,26 @@ func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 	}
 
 	return returns, total, nil
+}
+
+func (r *ReturnRepository) GetByID(ctx context.Context, id int) (*model.Return, error) {
+	var returnBorrow *model.Return
+
+	if err := r.db.WithContext(ctx).
+		Preload("Borrow").
+		Preload("Borrow.User").
+		Preload("Borrow.ReviewedUser").
+		Preload("Borrow.Item").
+		Preload("Borrow.Item.Category").
+		First(returnBorrow, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return returnBorrow, nil
 }
 
 func (r *ReturnRepository) CountAll(ctx context.Context) (int64, error) {
