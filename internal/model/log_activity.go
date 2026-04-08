@@ -30,6 +30,10 @@ const (
 
 	ActivityReturnItem    ActivityType = "RETURN_ITEM"
 	ActivityConfirmReturn ActivityType = "CONFIRM_RETURN"
+
+	ActivityCreateReturn ActivityType = "CREATE_RETURN"
+	ActivityUpdateReturn ActivityType = "UPDATE_RETURN"
+	ActivityDeleteReturn ActivityType = "DELETE_RETURN"
 )
 
 type LogActivity struct {

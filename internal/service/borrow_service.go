@@ -144,6 +144,10 @@ func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req 
 			return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", req.ItemID))
 		}
 
+		if item.Quantity < req.Quantity {
+			return errors.BadRequest("Item does not have enough quantity")
+		}
+
 		borrow := mapper.ToBorrowModel(req, currentUser, *item)
 		if err := txBorrowRepo.Create(ctx, borrow); err != nil {
 			return err
@@ -167,6 +171,14 @@ func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req 
 func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.User, req dto.BorrowForUserRequest) (dto.BorrowResponse, error) {
 	var createdBorrow *model.Borrow
 
+	now := time.Now().Truncate(24 * time.Hour)
+	if req.BorrowDate.Before(now) {
+		return dto.BorrowResponse{}, errors.BadRequest("Borrow date cannot be in the past")
+	}
+	if !req.ReturnDate.After(req.BorrowDate.Time) {
+		return dto.BorrowResponse{}, errors.BadRequest("Return date must be after borrow date")
+	}
+
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
 		txItemRepo := s.itemRepo.WithTx(tx)
@@ -187,6 +199,10 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 		}
 		if err != nil {
 			return err
+		}
+
+		if item.Quantity < req.Quantity {
+			return errors.BadRequest("Item does not have enough quantity")
 		}
 
 		borrow := mapper.ToBorrowModelForUser(req, *user, *item)
@@ -211,6 +227,14 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 
 func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest, id int, currentUser model.User) (dto.BorrowResponse, error) {
 	var updatedBorrow *model.Borrow
+
+	now := time.Now().Truncate(24 * time.Hour)
+	if req.BorrowDate.Before(now) {
+		return dto.BorrowResponse{}, errors.BadRequest("Borrow date cannot be in the past")
+	}
+	if !req.ReturnDate.After(req.BorrowDate.Time) {
+		return dto.BorrowResponse{}, errors.BadRequest("Return date must be after borrow date")
+	}
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
@@ -241,6 +265,10 @@ func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest
 			}
 		}
 
+		if item.Quantity < req.Quantity {
+			return errors.BadRequest("Item does not have enough quantity")
+		}
+
 		mapper.UpdateBorrowModel(borrow, req, *item)
 		if err := txBorrowRepo.Update(ctx, borrow); err != nil {
 			return err
@@ -266,7 +294,6 @@ func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id 
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
-		txItemRepo := s.itemRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
 		borrow, err := txBorrowRepo.GetByID(ctx, id)
@@ -291,17 +318,6 @@ func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id 
 		borrow.ReviewedUser = &currentUser
 		borrow.OfficerNote = req.OfficerNote
 		borrow.ReviewAt = &now
-
-		item.Quantity -= borrow.Quantity
-		if item.Quantity <= 0 {
-			item.Status = model.ItemStatusUnavailable
-		} else {
-			item.Status = model.ItemStatusAvailable
-		}
-
-		if err := txItemRepo.Update(ctx, item); err != nil {
-			return err
-		}
 
 		if err := txBorrowRepo.Update(ctx, borrow); err != nil {
 			return err
@@ -372,6 +388,7 @@ func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id 
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
+		txItemRepo := s.itemRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
 		borrow, err := txBorrowRepo.GetByID(ctx, id)
@@ -385,8 +402,24 @@ func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id 
 		if borrow.Status != model.BorrowStatusApproved {
 			return errors.BadRequest("Borrow status is not approved")
 		}
-		borrow.Status = model.BorrowStatusBorrowed
 
+		item := &borrow.Item
+		if item.Quantity < borrow.Quantity {
+			return errors.BadRequest("Item does not have enough quantity")
+		}
+
+		item.Quantity -= borrow.Quantity
+		if item.Quantity <= 0 {
+			item.Status = model.ItemStatusUnavailable
+		} else {
+			item.Status = model.ItemStatusAvailable
+		}
+
+		if err := txItemRepo.Update(ctx, item); err != nil {
+			return err
+		}
+
+		borrow.Status = model.BorrowStatusBorrowed
 		if err := txBorrowRepo.Update(ctx, borrow); err != nil {
 			return err
 		}
@@ -412,6 +445,7 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id i
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
+		txItemRepo := s.itemRepo.WithTx(tx)
 		txReturnRepo := s.returnRepo.WithTx(tx)
 
 		borrow, err := txBorrowRepo.GetByID(ctx, id)
@@ -424,6 +458,14 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id i
 
 		if borrow.Status != model.BorrowStatusBorrowed {
 			return errors.BadRequest("Item is not being borrowed")
+		}
+
+		item := &borrow.Item
+		item.Quantity += borrow.Quantity
+		item.Status = model.ItemStatusAvailable
+
+		if err := txItemRepo.Update(ctx, item); err != nil {
+			return err
 		}
 
 		borrow.Status = model.BorrowStatusReturned
@@ -474,8 +516,9 @@ func (s *BorrowService) Delete(ctx context.Context, id int, currentUser model.Us
 		}
 
 		if borrow.Status == model.BorrowStatusApproved ||
-			borrow.Status == model.BorrowStatusBorrowed {
-			return errors.BadRequest("Borrow is currently active")
+			borrow.Status == model.BorrowStatusBorrowed ||
+			borrow.Status == model.BorrowStatusReturned {
+			return errors.BadRequest("Only pending and rejected borrow can be deleted")
 		}
 
 		if err := txBorrowRepo.Delete(ctx, borrow); err != nil {
