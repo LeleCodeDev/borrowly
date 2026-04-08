@@ -3,6 +3,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lelecodedev/borrowly/internal/dto"
@@ -99,4 +100,78 @@ func (h *ReturnHandler) GetReturnCardByUser(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusOK, "Return dashboard data successfully fetched", cardData)
+}
+
+func (h *ReturnHandler) CreateReturnForUser(c *gin.Context) {
+	var req dto.ReturnCreateForUserRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	returnBorrow, err := h.service.CreateForUser(ctx, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusCreated, "Return successfully created", returnBorrow)
+}
+
+func (h *ReturnHandler) UpdateReturnForUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	var req dto.ReturnUpdateForUserRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		if valErrors, ok := errors.GetValidationError(err); ok {
+			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
+			return
+		}
+
+		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	returnBorrow, err := h.service.UpdateForUser(ctx, id, currentUser, req)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusCreated, "Return successfully updated", returnBorrow)
+}
+
+func (h *ReturnHandler) DeleteReturn(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUser := c.MustGet("user").(model.User)
+
+	if err := h.service.Delete(ctx, id, currentUser); err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success[any](c, http.StatusOK, "Return successfully deleted", nil)
 }

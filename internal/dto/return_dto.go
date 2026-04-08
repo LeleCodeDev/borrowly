@@ -30,12 +30,12 @@ type (
 	}
 
 	ReturnCreateForUserRequest struct {
-		BorrowID   uint            `json:"borrowId" binding:"required,gt=0"`
-		ReturnDate *types.DateOnly `json:"returnDate" binding:"required" time_format:"2006-01-02"`
+		BorrowID   uint            `json:"borrowId" form:"borrowId" binding:"required,gt=0"`
+		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
 	}
 
 	ReturnUpdateForUserRequest struct {
-		ReturnDate *types.DateOnly `json:"returnDate" binding:"required" time_format:"2006-01-02"`
+		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
 	}
 
 	ReturnCardResponse struct {
