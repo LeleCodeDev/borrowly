@@ -56,5 +56,6 @@ export const borrowApi = {
       .put<ApiResponse<Borrow>>(`/my-borrows/${id}/return`, data)
       .then((r) => r.data),
 
-  delete: (id: number) => api.delete(`borrows/${id}`).then((r) => r.data),
+  delete: (id: number) =>
+    api.delete<ApiResponse<null>>(`borrows/${id}`).then((r) => r.data),
 };

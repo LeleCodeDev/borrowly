@@ -11,7 +11,7 @@ export const useItems = (params: ItemQuery = {}) =>
 
 export const useItemCard = () =>
   useQuery({
-    queryKey: ["item-dashboard"],
+    queryKey: ["item-card"],
     queryFn: itemApi.getCard,
     staleTime: 60 * 1000 * 1,
   });
@@ -23,7 +23,7 @@ export const useCreateItem = () => {
     mutationFn: itemApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["item-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["item-card"] });
     },
   });
 };
@@ -36,7 +36,7 @@ export const useUpdateItem = () => {
       itemApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["item-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["item-card"] });
     },
   });
 };
@@ -48,7 +48,7 @@ export const useDeleteItem = () => {
     mutationFn: itemApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["item-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["item-card"] });
     },
   });
 };

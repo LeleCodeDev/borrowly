@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { borrowApi } from "../../api/borrowApi";
-import type { BorrowQuery, BorrowRequest } from "../../types/borrow";
+import type {
+  BorrowApprovalRequest,
+  BorrowQuery,
+  BorrowRequest,
+} from "../../types/borrow";
 
 export const useBorrows = (params: BorrowQuery = {}) =>
   useQuery({
@@ -11,7 +15,7 @@ export const useBorrows = (params: BorrowQuery = {}) =>
 
 export const useBorrowCard = () =>
   useQuery({
-    queryKey: ["borrow-dashboard"],
+    queryKey: ["borrow-card"],
     queryFn: borrowApi.getCard,
     staleTime: 60 * 1000 * 1,
   });
@@ -25,7 +29,7 @@ export const useMyBorrows = (params: BorrowQuery = {}) =>
 
 export const useMyBorrowCard = () =>
   useQuery({
-    queryKey: ["my-borrow-dashboard"],
+    queryKey: ["my-borrow-card"],
     queryFn: borrowApi.getMyCard,
     staleTime: 60 * 1000 * 1,
   });
@@ -37,8 +41,8 @@ export const useCreateBorrow = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
       queryClient.invalidateQueries({ queryKey: ["my-borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["my-borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+      queryClient.invalidateQueries({ queryKey: ["my-borrow-card"] });
     },
   });
 };
@@ -49,7 +53,7 @@ export const useCreateBorrowForUser = () => {
     mutationFn: borrowApi.createForUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
     },
   });
 };
@@ -61,7 +65,7 @@ export const useUpdateBorrowForUser = () => {
       borrowApi.updateForUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
     },
   });
 };
@@ -69,10 +73,11 @@ export const useUpdateBorrowForUser = () => {
 export const useApproveBorrow = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: borrowApi.approve,
+    mutationFn: ({ id, data }: { id: number; data: BorrowApprovalRequest }) =>
+      borrowApi.approve(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
     },
   });
 };
@@ -80,10 +85,11 @@ export const useApproveBorrow = () => {
 export const useRejectBorrow = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: borrowApi.reject,
+    mutationFn: ({ id, data }: { id: number; data: BorrowApprovalRequest }) =>
+      borrowApi.reject(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
     },
   });
 };
@@ -95,8 +101,8 @@ export const useConfirmBorrow = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrows"] });
       queryClient.invalidateQueries({ queryKey: ["my-borrows"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["my-borrow-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+      queryClient.invalidateQueries({ queryKey: ["my-borrow-card"] });
     },
   });
 };
@@ -110,10 +116,22 @@ export const useReturnBorrow = () => {
       queryClient.invalidateQueries({ queryKey: ["my-borrows"] });
       queryClient.invalidateQueries({ queryKey: ["returns"] });
       queryClient.invalidateQueries({ queryKey: ["my-returns"] });
-      queryClient.invalidateQueries({ queryKey: ["borrow-dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["my-borrow-dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["return-dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["my-return-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+      queryClient.invalidateQueries({ queryKey: ["my-borrow-card"] });
+      queryClient.invalidateQueries({ queryKey: ["return-card"] });
+      queryClient.invalidateQueries({ queryKey: ["my-return-card"] });
+    },
+  });
+};
+
+export const useDeleteBorrow = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: borrowApi.delete,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["borrows"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
     },
   });
 };

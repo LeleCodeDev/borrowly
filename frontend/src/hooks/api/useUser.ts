@@ -11,7 +11,7 @@ export const useUsers = (params: UserQuery = {}) =>
 
 export const useUserCard = () =>
   useQuery({
-    queryKey: ["user-dashboard"],
+    queryKey: ["user-card"],
     queryFn: userApi.getCard,
     staleTime: 60 * 1000 * 1,
   });
@@ -23,7 +23,7 @@ export const useCreateUser = () => {
     mutationFn: userApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["user-card"] });
     },
   });
 };
@@ -36,7 +36,7 @@ export const useUpdateUser = () => {
       userApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["user-card"] });
     },
   });
 };
@@ -48,7 +48,7 @@ export const useDeleteUser = () => {
     mutationFn: userApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["user-card"] });
     },
   });
 };

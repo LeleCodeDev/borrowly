@@ -24,3 +24,12 @@ export interface ReturnCard {
   totalReturn: number;
   totalOverdue: number;
 }
+
+export interface ReturnCreateForUserRequest {
+  borrowId: number;
+  returnDate: string;
+}
+
+export interface ReturnUpdateForUserRequest {
+  returnDate: string;
+}
