@@ -44,8 +44,12 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 		return
 	}
 
-	pagination := pagination.BuildPagination(req.Page, req.Size, total)
+	if req.Unpage {
+		response.Success(c, http.StatusOK, "All users successfully fetched", users)
+		return
+	}
 
+	pagination := pagination.BuildPagination(req.Page, req.Size, total)
 	response.Paginated(c, http.StatusOK, "All users successfully fetched", users, pagination)
 }
 

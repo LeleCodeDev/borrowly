@@ -1,6 +1,10 @@
 import { Package, Tag } from "lucide-react";
 import type React from "react";
-import type { BorrowError, BorrowRequest } from "../../types/borrow";
+import type {
+  BorrowError,
+  BorrowForUserRequest,
+  BorrowRequest,
+} from "../../types/borrow";
 import type { Item } from "../../types/item";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogFooter } from "../ui/dialog";
@@ -8,16 +12,19 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Spinner } from "../ui/spinner";
+import type { User } from "../../types/user";
 
-interface CreateBorrowModalProps {
+interface CreateBorrowModalProps<T extends "admin" | "borrower"> {
   isOpen: boolean;
   selectedItem: Item;
-  formData: BorrowRequest;
+  formData: T extends "admin" ? BorrowForUserRequest : BorrowRequest; // fix: was BorrowForUserRequest on both sides
   fieldErrors: BorrowError | null;
   isPending: boolean;
+  role: T;
+  users: User[];
   onChange: (
-    field: keyof BorrowRequest,
-    value: BorrowRequest[keyof BorrowRequest],
+    field: keyof BorrowForUserRequest,
+    value: BorrowForUserRequest[keyof BorrowForUserRequest],
   ) => void;
   onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,17 +33,19 @@ interface CreateBorrowModalProps {
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
-const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
+const CreateBorrowModal = <T extends "admin" | "borrower">({
   isOpen,
   selectedItem,
   formData,
   fieldErrors,
   isPending,
+  role,
+  users,
   onChange,
   onSubmit,
   onOpenChange,
   onClose,
-}) => {
+}: CreateBorrowModalProps<T>) => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -87,7 +96,6 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
                         min={new Date().toISOString().split("T")[0]}
                         onChange={(e) => onChange("borrowDate", e.target.value)}
                       />
-
                       {fieldErrors?.borrowDate && (
                         <p className="text-sm text-red-600">
                           {fieldErrors.borrowDate}
@@ -106,7 +114,6 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
                         className={`${fieldErrors?.returnDate && "border-red-600 border-3"}`}
                         onChange={(e) => onChange("returnDate", e.target.value)}
                       />
-
                       {fieldErrors?.returnDate && (
                         <p className="text-sm text-red-600">
                           {fieldErrors.returnDate}
@@ -114,6 +121,30 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
                       )}
                     </div>
                   </div>
+
+                  {/* fix: role === "admin" instead of isAdmin */}
+                  {role === "admin" && (
+                    <div className="space-y-1.5">
+                      <Label htmlFor="user" className="mb-2">
+                        Borrow For User
+                      </Label>
+                      <select
+                        id="user"
+                        className="w-full border rounded-md px-3 py-2 text-sm"
+                        value={(formData as BorrowForUserRequest).userId ?? ""}
+                        onChange={(e) => onChange("userId", e.target.value)}
+                      >
+                        <option value="" disabled>
+                          Select a user
+                        </option>
+                        {users.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.username}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <div className="grid">
                     <Label htmlFor="quantity" className="mb-2">
@@ -148,7 +179,6 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
                       rows={3}
                       className={`resize-none text-sm ${fieldErrors?.purpose && "border-red-600 border-3"}`}
                     />
-
                     {fieldErrors?.purpose && (
                       <p className="text-sm text-red-600">
                         {fieldErrors.purpose}
@@ -160,12 +190,11 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
                     <Button
                       type="button"
                       variant="outline"
-                      className=" hover:cursor-pointer"
+                      className="hover:cursor-pointer"
                       onClick={onClose}
                     >
                       Cancel
                     </Button>
-
                     <Button
                       type="submit"
                       className={`${isPending && "cursor-not-allowed"} hover:cursor-pointer transition-all duration-200`}

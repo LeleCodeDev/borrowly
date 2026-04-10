@@ -11,6 +11,7 @@ type (
 	UserQuery struct {
 		Search string         `form:"search"`
 		Role   model.UserRole `json:"role" form:"role" binding:"omitempty,oneof=borrower officer"`
+		Unpage bool           `form:"unpage"`
 		PaginationQuery
 		SortQuery
 	}

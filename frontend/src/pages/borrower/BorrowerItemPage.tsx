@@ -1,9 +1,9 @@
+import CreateBorrowModal from "@/components/borrow/CreateBorrowModal";
 import { useDebounce } from "@uidotdev/usehooks";
 import type { AxiosError } from "axios";
 import { Filter, Package, Search, Tag, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import CreateBorrowModal from "../../components/borrow/CreateBorrowModal";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
@@ -36,7 +36,11 @@ import { useCreateBorrow } from "../../hooks/api/useBorrow";
 import { useCategories } from "../../hooks/api/useCategory";
 import { useItems } from "../../hooks/api/useItem";
 import type { ApiError } from "../../types/apiResponse";
-import type { BorrowError, BorrowRequest } from "../../types/borrow";
+import type {
+  BorrowError,
+  BorrowForUserRequest,
+  BorrowRequest,
+} from "../../types/borrow";
 import type { Item, ItemStatus } from "../../types/item";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
@@ -115,8 +119,9 @@ const UserItemPage = () => {
   };
 
   const handleChange = (
-    field: keyof BorrowRequest,
-    value: BorrowRequest[keyof BorrowRequest],
+    field: keyof BorrowForUserRequest,
+
+    value: BorrowForUserRequest[keyof BorrowForUserRequest],
   ) => {
     setBorrowForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -561,7 +566,9 @@ const UserItemPage = () => {
       </main>
 
       {/* Borrow Dialog */}
-      <CreateBorrowModal
+      <CreateBorrowModal<"borrower">
+        role={"borrower"}
+        users={[]}
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         selectedItem={selectedItem as Item}

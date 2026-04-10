@@ -72,7 +72,9 @@ func (r *UserRepository) GetAll(ctx context.Context, req dto.UserQuery) ([]model
 
 	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
-	db = db.Offset(req.GetOffset()).Limit(req.Size)
+	if !req.Unpage {
+		db = db.Offset(req.GetOffset()).Limit(req.Size)
+	}
 
 	if err := db.Find(&users).Error; err != nil {
 		return nil, 0, err
