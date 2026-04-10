@@ -32,6 +32,7 @@ export interface ItemQuery extends BaseQuery {
   search?: string;
   categoryId?: number;
   status?: ItemStatus;
+  unpage?: boolean;
 }
 
 export interface ItemError {

@@ -36,11 +36,7 @@ import { useCreateBorrow } from "../../hooks/api/useBorrow";
 import { useCategories } from "../../hooks/api/useCategory";
 import { useItems } from "../../hooks/api/useItem";
 import type { ApiError } from "../../types/apiResponse";
-import type {
-  BorrowError,
-  BorrowForUserRequest,
-  BorrowRequest,
-} from "../../types/borrow";
+import type { BorrowError, BorrowRequest } from "../../types/borrow";
 import type { Item, ItemStatus } from "../../types/item";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
@@ -119,9 +115,9 @@ const UserItemPage = () => {
   };
 
   const handleChange = (
-    field: keyof BorrowForUserRequest,
+    field: keyof BorrowRequest,
 
-    value: BorrowForUserRequest[keyof BorrowForUserRequest],
+    value: BorrowRequest[keyof BorrowRequest],
   ) => {
     setBorrowForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -566,9 +562,7 @@ const UserItemPage = () => {
       </main>
 
       {/* Borrow Dialog */}
-      <CreateBorrowModal<"borrower">
-        role={"borrower"}
-        users={[]}
+      <CreateBorrowModal
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         selectedItem={selectedItem as Item}

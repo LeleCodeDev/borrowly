@@ -12,6 +12,7 @@ type (
 		Search     string           `form:"search"`
 		CategoryID uint             `form:"categoryId" json:"categoryId" binding:"omitempty,gt=0"`
 		Status     model.ItemStatus `form:"status" json:"status" binding:"omitempty,oneof=available unavailable"`
+		Unpage     bool             `form:"unpage"`
 		PaginationQuery
 		SortQuery
 	}

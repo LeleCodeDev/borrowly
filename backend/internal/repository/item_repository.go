@@ -56,7 +56,9 @@ func (r *ItemRepository) GetAll(ctx context.Context, req dto.ItemQuery) ([]model
 
 	db = db.Order(string(req.OrderBy) + " " + string(req.Order))
 
-	db = db.Offset(req.GetOffset()).Limit(req.Size)
+	if !req.Unpage {
+		db = db.Offset(req.GetOffset()).Limit(req.Size)
+	}
 
 	if err := db.Find(&items).Error; err != nil {
 		return nil, 0, err

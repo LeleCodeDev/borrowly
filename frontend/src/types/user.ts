@@ -24,6 +24,7 @@ export interface UserRequest {
 export interface UserQuery extends BaseQuery {
   search?: string;
   role?: UserRoleRequest;
+  unpage?: boolean;
 }
 
 export interface UserError {

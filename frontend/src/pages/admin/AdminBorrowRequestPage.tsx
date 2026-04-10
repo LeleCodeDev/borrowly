@@ -1,4 +1,3 @@
-import { Textarea } from "../../components/ui/textarea";
 import type { AxiosError } from "axios";
 import {
   CheckCircle,
@@ -6,19 +5,15 @@ import {
   Eye,
   Filter,
   Package,
+  Pencil,
+  Plus,
+  Trash2,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../components/ui/alert-dialog";
+import AdminCreateBorrowModal from "../../components/borrow/AdminCreateBorrowModal";
+import BorrowStatusBadge from "../../components/ui/BorrowStatusBadge";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
@@ -58,15 +53,32 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import {
-  useApproveBorrow,
   useBorrowCard,
   useBorrows,
-  useRejectBorrow,
+  useCreateBorrowForUser,
+  useDeleteBorrow,
+  useUpdateBorrowForUser,
 } from "../../hooks/api/useBorrow";
-import type { ApiError } from "../../types/apiResponse";
-import type { Borrow, BorrowStatus } from "../../types/borrow";
-import BorrowStatusBadge from "../../components/ui/BorrowStatusBadge";
+import { useItems } from "../../hooks/api/useItem";
+import { useUsers } from "../../hooks/api/useUser";
 import { formatDate } from "../../lib/formatDate";
+import type { ApiError } from "../../types/apiResponse";
+import type {
+  Borrow,
+  BorrowError,
+  BorrowForUserRequest,
+  BorrowStatus,
+} from "../../types/borrow";
+import { formatDateValue } from "../../lib/formatDateValue";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../components/ui/alert-dialog";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -78,11 +90,19 @@ const OfficerBorrowRequestPage = () => {
   const [endDate, setEndDate] = useState("");
   const [selectedBorrow, setSelectedBorrow] = useState<Borrow | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [actionTarget, setActionTarget] = useState<{
-    id: number;
-    type: "approve" | "reject";
-  } | null>(null);
-  const [officerNote, setOfficerNote] = useState("");
+  const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<BorrowError | null>(null);
+  const [editingBorrow, setEditingBorrow] = useState<Borrow | null>(null);
+  const [deletingBorrowId, setDeletingBorrowId] = useState<number | null>(null);
+  const [borrowForm, setBorrowForm] = useState<BorrowForUserRequest>({
+    userId: 0,
+    itemId: 0,
+    borrowDate: null,
+    returnDate: null,
+    quantity: 0,
+    purpose: "",
+  });
 
   const hasActiveFilters = !!statusFilter || !!startDate || !!endDate;
 
@@ -94,11 +114,20 @@ const OfficerBorrowRequestPage = () => {
     endDate: endDate || undefined,
   });
 
+  const { data: usersData, isPending: userIsPending } = useUsers({
+    unpage: true,
+  });
+
+  const { data: itemData, isPending: itemIsPending } = useItems({
+    unpage: true,
+  });
+
   const { data: dashboardData, isPending: dashboardDataIsPending } =
     useBorrowCard();
 
-  const approveBorrow = useApproveBorrow();
-  const rejectBorrow = useRejectBorrow();
+  const createBorrowForUser = useCreateBorrowForUser();
+  const updateBorrowForUser = useUpdateBorrowForUser();
+  const deleteBorrow = useDeleteBorrow();
 
   const borrows = data?.data;
   const totalPages = data?.pagination?.totalPages ?? 1;
@@ -110,30 +139,96 @@ const OfficerBorrowRequestPage = () => {
     setPage(1);
   };
 
-  const handleAction = () => {
-    if (!actionTarget) return;
-    const mutation =
-      actionTarget.type === "approve" ? approveBorrow : rejectBorrow;
-    mutation.mutate(
-      { id: actionTarget.id, data: { officerNote: officerNote || null } },
-      {
+  const handleOpenDialog = (borrow?: Borrow) => {
+    setFieldErrors(null);
+    if (borrow) {
+      setEditingBorrow(borrow);
+      setBorrowForm({
+        userId: borrow.user?.id ?? 0,
+        itemId: borrow.item?.id ?? 0,
+        purpose: borrow.purpose,
+        quantity: borrow.quantity,
+        borrowDate: formatDateValue(borrow.borrowDate),
+        returnDate: formatDateValue(borrow.returnDate),
+      });
+    } else {
+      setEditingBorrow(null);
+      setBorrowForm({
+        userId: 0,
+        itemId: 0,
+        borrowDate: null,
+        returnDate: null,
+        quantity: 0,
+        purpose: "",
+      });
+    }
+    setIsBorrowModalOpen(true);
+  };
+
+  const handleSubmitBorrow = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (editingBorrow) {
+      updateBorrowForUser.mutate(
+        { id: editingBorrow.id, data: borrowForm },
+        {
+          onSuccess: (data) => {
+            toast.success(data.message);
+            setIsBorrowModalOpen(false);
+          },
+          onError: (err) => {
+            const error = err as AxiosError<ApiError<BorrowError>>;
+            toast.error(
+              error.response?.data.message || "Update borrow request failed",
+            );
+            if (error.response?.data.errors) {
+              setFieldErrors(error.response.data.errors);
+            }
+          },
+        },
+      );
+    } else {
+      createBorrowForUser.mutate(borrowForm, {
         onSuccess: (data) => {
           toast.success(data.message);
-          setActionTarget(null);
-          setOfficerNote("");
+          setIsBorrowModalOpen(false);
+        },
+        onError: (err) => {
+          const error = err as AxiosError<ApiError<BorrowError>>;
+          toast.error(
+            error.response?.data.message || "Create borrow request failed",
+          );
+          if (error.response?.data.errors) {
+            setFieldErrors(error.response.data.errors);
+          }
+        },
+      });
+    }
+  };
+
+  const handleChange = (
+    field: keyof BorrowForUserRequest,
+
+    value: BorrowForUserRequest[keyof BorrowForUserRequest],
+  ) => {
+    setBorrowForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleDelete = () => {
+    if (deletingBorrowId) {
+      deleteBorrow.mutate(deletingBorrowId, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          setIsDeleteDialogOpen(false);
+          setDeletingBorrowId(null);
         },
         onError: (err) => {
           const error = err as AxiosError<ApiError<null>>;
-          toast.error(
-            error.response?.data.message ||
-              `Failed to ${actionTarget.type} request`,
-          );
+          toast.error(error.response?.data.message || "Delete borrow failed");
         },
-      },
-    );
+      });
+    }
   };
-
-  const isActionPending = approveBorrow.isPending || rejectBorrow.isPending;
 
   return (
     <div className="min-h-screen ">
@@ -229,8 +324,8 @@ const OfficerBorrowRequestPage = () => {
 
         {/* Table Card */}
         <Card>
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
+          <CardHeader className="">
+            <div className="flex items-center justify-between w-full gap-3">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -351,6 +446,14 @@ const OfficerBorrowRequestPage = () => {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              <Button
+                className="hover:cursor-pointer shrink-0 gap-2"
+                onClick={() => handleOpenDialog()}
+              >
+                <Plus className="h-4 w-4" />
+                Add borrow request
+              </Button>
             </div>
           </CardHeader>
 
@@ -489,6 +592,31 @@ const OfficerBorrowRequestPage = () => {
                             >
                               <Eye className="h-3.5 w-3.5" />
                             </Button>
+                            {(borrow.status == "pending" ||
+                              borrow.status == "rejected") && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:cursor-pointer"
+                                onClick={() => handleOpenDialog(borrow)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {(borrow.status == "pending" ||
+                              borrow.status == "rejected") && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:cursor-pointer hover:bg-red-50 dark:hover:bg-red-950"
+                                onClick={() => {
+                                  setDeletingBorrowId(borrow.id);
+                                  setIsDeleteDialogOpen(true);
+                                }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -795,71 +923,54 @@ const OfficerBorrowRequestPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Approve / Reject Confirmation */}
+      <AdminCreateBorrowModal
+        isEdit={editingBorrow != null}
+        isOpen={isBorrowModalOpen}
+        items={itemData?.data || []}
+        itemIsPending={itemIsPending}
+        formData={borrowForm}
+        fieldErrors={fieldErrors}
+        isPending={
+          editingBorrow
+            ? updateBorrowForUser.isPending
+            : createBorrowForUser.isPending
+        }
+        users={usersData?.data || []}
+        userIsPending={userIsPending}
+        onChange={handleChange}
+        onSubmit={handleSubmitBorrow}
+        onOpenChange={setIsBorrowModalOpen}
+        onClose={() => setIsBorrowModalOpen(false)}
+      />
+
       <AlertDialog
-        open={!!actionTarget}
-        onOpenChange={(open) => {
-          if (!open) setActionTarget(null);
-        }}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {actionTarget?.type === "approve"
-                ? "Approve Request?"
-                : "Reject Request?"}
-            </AlertDialogTitle>
+            <AlertDialogTitle>Delete Borrow</AlertDialogTitle>
             <AlertDialogDescription>
-              {actionTarget?.type === "approve"
-                ? "The borrower will be notified and can pick up the item."
-                : "The borrower will be notified that their request has been declined."}
+              This action cannot be undone. This will permanently delete the
+              borrow history from the system.
             </AlertDialogDescription>
           </AlertDialogHeader>
-
-          <div className="flex flex-col gap-1.5 py-2">
-            <Label className="text-xs text-muted-foreground">
-              Officer Note{" "}
-              <span className="text-muted-foreground font-normal">
-                (optional)
-              </span>
-            </Label>
-            <Textarea
-              value={officerNote}
-              onChange={(e) => setOfficerNote(e.target.value)}
-              placeholder="Add a note for the borrower..."
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-
           <AlertDialogFooter>
-            <AlertDialogCancel
-              className="hover:cursor-pointer"
-              disabled={isActionPending}
-            >
+            <AlertDialogCancel className="hover:cursor-pointer">
               Cancel
             </AlertDialogCancel>
             <Button
-              onClick={handleAction}
-              disabled={isActionPending}
-              variant={actionTarget?.type === "approve" ? "default" : "outline"}
-              className={`hover:cursor-pointer ${
-                actionTarget?.type === "reject"
-                  ? "text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/30"
-                  : ""
-              }`}
+              className="bg-red-600 hover:bg-red-700 hover:cursor-pointer transition-colors"
+              onClick={handleDelete}
+              disabled={deleteBorrow.isPending}
             >
-              {isActionPending ? (
+              {deleteBorrow.isPending ? (
                 <span className="flex items-center gap-2">
                   <Spinner data-icon="inline-start" />
-                  {actionTarget?.type === "approve"
-                    ? "Approving..."
-                    : "Rejecting..."}
+                  Deleting...
                 </span>
-              ) : actionTarget?.type === "approve" ? (
-                "Approve"
               ) : (
-                "Reject"
+                "Delete"
               )}
             </Button>
           </AlertDialogFooter>

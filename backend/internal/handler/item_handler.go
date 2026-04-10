@@ -46,6 +46,11 @@ func (h *ItemHandler) GetAllItems(c *gin.Context) {
 		return
 	}
 
+	if req.Unpage {
+		response.Success(c, http.StatusOK, "All items successfully fetched", items)
+		return
+	}
+
 	pagination := pagination.BuildPagination(req.Page, req.Size, total)
 	response.Paginated(c, http.StatusOK, "All items successfully fetched", items, pagination)
 }

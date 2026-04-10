@@ -45,6 +45,7 @@ export interface BorrowForUserRequest extends BorrowRequest {
 }
 
 export interface BorrowError {
+  userId: number;
   itemId: number;
   quantity: number;
   purpose: string;
