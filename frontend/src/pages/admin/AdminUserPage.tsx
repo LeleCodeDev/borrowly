@@ -13,15 +13,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../components/ui/alert-dialog";
+import DeleteModal from "../../components/DeleteModal";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
 import {
@@ -594,39 +586,16 @@ const AdminUserPage = () => {
         onClose={() => setIsDialogOpen(false)}
       />
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
+      <DeleteModal
+        title={"Delete User"}
+        description={
+          "This action cannot be undone. This will permanently delete the user from the system."
+        }
+        isOpen={isDeleteDialogOpen}
+        isPending={deleteUser.isPending}
+        onDelete={handleDelete}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              user from the system.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:cursor-pointer">
-              Cancel
-            </AlertDialogCancel>
-            <Button
-              className="bg-red-600 hover:bg-red-700 hover:cursor-pointer transition-colors"
-              onClick={handleDelete}
-              disabled={deleteUser.isPending}
-            >
-              {deleteUser.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Spinner data-icon="inline-start" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </div>
   );
 };

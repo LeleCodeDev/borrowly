@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import AdminCreateBorrowModal from "../../components/borrow/AdminCreateBorrowModal";
+import DeleteModal from "../../components/DeleteModal";
 import BorrowStatusBadge from "../../components/ui/BorrowStatusBadge";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
@@ -62,6 +63,7 @@ import {
 import { useItems } from "../../hooks/api/useItem";
 import { useUsers } from "../../hooks/api/useUser";
 import { formatDate } from "../../lib/formatDate";
+import { formatDateValue } from "../../lib/formatDateValue";
 import type { ApiError } from "../../types/apiResponse";
 import type {
   Borrow,
@@ -69,16 +71,6 @@ import type {
   BorrowForUserRequest,
   BorrowStatus,
 } from "../../types/borrow";
-import { formatDateValue } from "../../lib/formatDateValue";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../components/ui/alert-dialog";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -943,39 +935,16 @@ const OfficerBorrowRequestPage = () => {
         onClose={() => setIsBorrowModalOpen(false)}
       />
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
+      <DeleteModal
+        title={"Delete Borrow"}
+        description={
+          "This action cannot be undone. This will permanently delete the borrow history from the system."
+        }
+        isOpen={isDeleteDialogOpen}
+        isPending={deleteBorrow.isPending}
+        onDelete={handleDelete}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Borrow</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              borrow history from the system.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:cursor-pointer">
-              Cancel
-            </AlertDialogCancel>
-            <Button
-              className="bg-red-600 hover:bg-red-700 hover:cursor-pointer transition-colors"
-              onClick={handleDelete}
-              disabled={deleteBorrow.isPending}
-            >
-              {deleteBorrow.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Spinner data-icon="inline-start" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </div>
   );
 };

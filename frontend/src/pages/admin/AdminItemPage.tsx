@@ -3,16 +3,8 @@ import type { AxiosError } from "axios";
 import { Check, Filter, Package, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import DeleteModal from "../../components/DeleteModal";
 import ItemCreateUpdateModal from "../../components/item/ItemCreateUpdateModal";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../components/ui/alert-dialog";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
 import {
@@ -599,39 +591,16 @@ const AdminItemPage = () => {
         onSubmit={handleSubmit}
       />
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
+      <DeleteModal
+        title={"Delete Item"}
+        description={
+          "This action cannot be undone. This will permanently delete the item from the system."
+        }
+        isOpen={isDeleteDialogOpen}
+        isPending={deleteItem.isPending}
+        onDelete={handleDelete}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Item</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              item from the system.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:cursor-pointer">
-              Cancel
-            </AlertDialogCancel>
-            <Button
-              className="bg-red-600 hover:bg-red-700 hover:cursor-pointer transition-colors"
-              onClick={handleDelete}
-              disabled={deleteItem.isPending}
-            >
-              {deleteItem.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Spinner data-icon="inline-start" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </div>
   );
 };

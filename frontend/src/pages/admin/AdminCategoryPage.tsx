@@ -11,15 +11,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import CategoryCreateUpdateModal from "../../components/category/CategoryCreateUpdateModal";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../components/ui/alert-dialog";
+import DeleteModal from "../../components/DeleteModal";
 import { Button } from "../../components/ui/button";
 import ButtonThemeSwitcher from "../../components/ui/ButtonThemeSwitcher";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
@@ -478,39 +470,16 @@ const AdminCategoryPage = () => {
         onClose={() => setIsDialogOpen(false)}
       />
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
+      <DeleteModal
+        title={"Delete Cateogory"}
+        description={
+          "This action cannot be undone. This will permanently delete the category and associated items from the system."
+        }
+        isOpen={isDeleteDialogOpen}
+        isPending={deleteCategory.isPending}
+        onDelete={handleDelete}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Category</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              category and associated items from the system.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:cursor-pointer">
-              Cancel
-            </AlertDialogCancel>
-            <Button
-              className="bg-red-600 hover:bg-red-700 hover:cursor-pointer transition-colors"
-              onClick={handleDelete}
-              disabled={deleteCategory.isPending}
-            >
-              {deleteCategory.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Spinner data-icon="inline-start" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </div>
   );
 };
