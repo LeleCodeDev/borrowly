@@ -7,10 +7,11 @@ import {
   Package,
   Pencil,
   Plus,
+  RotateCcw,
   Trash2,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import AdminCreateBorrowModal from "../../components/borrow/AdminCreateBorrowModal";
 import DeleteModal from "../../components/DeleteModal";
@@ -71,22 +72,37 @@ import type {
   BorrowForUserRequest,
   BorrowStatus,
 } from "../../types/borrow";
+import type {
+  ReturnCreateForUserRequest,
+  ReturnError,
+} from "../../types/return";
+import CreateReturnModal from "../../components/return/CreateReturnModal";
+import { useCreateReturnForUser } from "../../hooks/api/useReturn";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
-const OfficerBorrowRequestPage = () => {
+const AdminBorrowRequestPage = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
   const [statusFilter, setStatusFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedBorrow, setSelectedBorrow] = useState<Borrow | null>(null);
+
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<BorrowError | null>(null);
+  const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false);
+
+  const [selectedBorrow, setSelectedBorrow] = useState<Borrow | null>(null);
   const [editingBorrow, setEditingBorrow] = useState<Borrow | null>(null);
   const [deletingBorrowId, setDeletingBorrowId] = useState<number | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<BorrowError | null>(null);
+  const [returnFieldErrors, setReturnFieldErrors] =
+    useState<ReturnError | null>(null);
+  const [returnForm, setReturnForm] = useState<ReturnCreateForUserRequest>({
+    borrowId: 0,
+    returnDate: null,
+  });
   const [borrowForm, setBorrowForm] = useState<BorrowForUserRequest>({
     userId: 0,
     itemId: 0,
@@ -105,21 +121,19 @@ const OfficerBorrowRequestPage = () => {
     startDate: startDate || undefined,
     endDate: endDate || undefined,
   });
-
   const { data: usersData, isPending: userIsPending } = useUsers({
     unpage: true,
   });
-
   const { data: itemData, isPending: itemIsPending } = useItems({
     unpage: true,
   });
-
   const { data: dashboardData, isPending: dashboardDataIsPending } =
     useBorrowCard();
 
   const createBorrowForUser = useCreateBorrowForUser();
   const updateBorrowForUser = useUpdateBorrowForUser();
   const deleteBorrow = useDeleteBorrow();
+  const createReturnForUser = useCreateReturnForUser();
 
   const borrows = data?.data;
   const totalPages = data?.pagination?.totalPages ?? 1;
@@ -155,6 +169,20 @@ const OfficerBorrowRequestPage = () => {
       });
     }
     setIsBorrowModalOpen(true);
+  };
+
+  const handleChange = (
+    field: keyof BorrowForUserRequest,
+    value: BorrowForUserRequest[keyof BorrowForUserRequest],
+  ) => {
+    setBorrowForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const returnHandleChange = (
+    field: keyof ReturnCreateForUserRequest,
+    value: ReturnCreateForUserRequest[keyof ReturnCreateForUserRequest],
+  ) => {
+    setReturnForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmitBorrow = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -198,14 +226,6 @@ const OfficerBorrowRequestPage = () => {
     }
   };
 
-  const handleChange = (
-    field: keyof BorrowForUserRequest,
-
-    value: BorrowForUserRequest[keyof BorrowForUserRequest],
-  ) => {
-    setBorrowForm((prev) => ({ ...prev, [field]: value }));
-  };
-
   const handleDelete = () => {
     if (deletingBorrowId) {
       deleteBorrow.mutate(deletingBorrowId, {
@@ -222,9 +242,28 @@ const OfficerBorrowRequestPage = () => {
     }
   };
 
+  const handleSubmitReturn = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    createReturnForUser.mutate(returnForm, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        setIsReturnDialogOpen(false);
+      },
+      onError: (err) => {
+        const error = err as AxiosError<ApiError<ReturnError>>;
+        toast.error(
+          error.response?.data.message || "Create return request failed",
+        );
+        if (error.response?.data.errors) {
+          setReturnFieldErrors(error.response.data.errors);
+        }
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen ">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-15 px-2">
           <div className="flex items-center gap-3">
@@ -242,7 +281,6 @@ const OfficerBorrowRequestPage = () => {
       </header>
 
       <main className="p-6 space-y-6">
-        {/* Stats — primary accent on pending */}
         <div className="grid grid-cols-3 gap-4">
           <Card className="border-yellow-100 dark:border-yellow-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -314,7 +352,6 @@ const OfficerBorrowRequestPage = () => {
           </Card>
         </div>
 
-        {/* Table Card */}
         <Card>
           <CardHeader className="">
             <div className="flex items-center justify-between w-full gap-3">
@@ -609,6 +646,22 @@ const OfficerBorrowRequestPage = () => {
                                 <Trash2 className="h-3.5 w-3.5 text-destructive" />
                               </Button>
                             )}
+                            {borrow.status == "borrowed" && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:cursor-pointer"
+                                onClick={() => {
+                                  setReturnForm({
+                                    ...returnForm,
+                                    borrowId: borrow.id,
+                                  });
+                                  setIsReturnDialogOpen(true);
+                                }}
+                              >
+                                <RotateCcw className="h-3.5 w-3.5 " />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -619,7 +672,6 @@ const OfficerBorrowRequestPage = () => {
             </div>
           </CardContent>
 
-          {/* Footer */}
           <div className="flex items-center justify-between px-6 py-4 border-t">
             <div className="flex items-center gap-2">
               <Label
@@ -698,12 +750,10 @@ const OfficerBorrowRequestPage = () => {
         </Card>
       </main>
 
-      {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-4xl p-0 overflow-hidden gap-0">
           {selectedBorrow && (
             <>
-              {/* Hero */}
               <div className="relative h-64 w-full overflow-hidden bg-muted shrink-0">
                 {selectedBorrow.item?.image ? (
                   <img
@@ -900,7 +950,6 @@ const OfficerBorrowRequestPage = () => {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="px-5 pb-5 pt-4 border-t">
                 <Button
                   variant="outline"
@@ -945,8 +994,19 @@ const OfficerBorrowRequestPage = () => {
         onDelete={handleDelete}
         onOpenChange={setIsDeleteDialogOpen}
       />
+
+      <CreateReturnModal
+        isOpen={isReturnDialogOpen}
+        formData={returnForm}
+        fieldErrors={returnFieldErrors}
+        onChange={returnHandleChange}
+        onSubmit={handleSubmitReturn}
+        isPending={createReturnForUser.isPending}
+        onOpenChange={setIsReturnDialogOpen}
+        onClose={() => setIsReturnDialogOpen(false)}
+      />
     </div>
   );
 };
 
-export default OfficerBorrowRequestPage;
+export default AdminBorrowRequestPage;

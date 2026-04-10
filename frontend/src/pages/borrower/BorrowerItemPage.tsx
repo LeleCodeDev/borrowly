@@ -41,7 +41,7 @@ import type { Item, ItemStatus } from "../../types/item";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
-const UserItemPage = () => {
+const BorrowerItemPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(9);
@@ -579,4 +579,4 @@ const UserItemPage = () => {
   );
 };
 
-export default UserItemPage;
+export default BorrowerItemPage;

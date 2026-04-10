@@ -58,20 +58,21 @@ import type {
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
 const AdminItemPage = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<ItemError | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(9);
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState("created_at");
   const [status, setStatus] = useState("");
   const [filterCategoryId, setFilterCategoryId] = useState(0);
-  const debouncedSearch = useDebounce(searchQuery, 500);
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ItemError | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+  const debouncedSearch = useDebounce(searchQuery, 500);
   const [formData, setFormData] = useState<ItemRequest>({
     name: "",
     categoryId: 0,
@@ -79,6 +80,12 @@ const AdminItemPage = () => {
     quantity: 0,
     image: null,
   });
+
+  const hasActiveFilters =
+    status ||
+    filterCategoryId !== 0 ||
+    orderBy !== "created_at" ||
+    order !== "asc";
 
   const { data: categoriesData, isPending: categoryIsPending } = useCategories({
     unpage: true,
@@ -94,6 +101,7 @@ const AdminItemPage = () => {
     status: status as ItemStatus,
     categoryId: filterCategoryId,
   });
+
   const createItem = useCreateItem();
   const updateItem = useUpdateItem();
   const deleteItem = useDeleteItem();
@@ -177,12 +185,6 @@ const AdminItemPage = () => {
       });
     }
   };
-
-  const hasActiveFilters =
-    status ||
-    filterCategoryId !== 0 ||
-    orderBy !== "created_at" ||
-    order !== "asc";
 
   return (
     <div className="min-h-screen">

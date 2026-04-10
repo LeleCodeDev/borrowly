@@ -67,13 +67,16 @@ import type { ApiError } from "../../types/apiResponse";
 import type { Borrow, BorrowStatus } from "../../types/borrow";
 import BorrowStatusBadge from "../../components/ui/BorrowStatusBadge";
 import { formatDate } from "../../lib/formatDate";
+import { borrowApi } from "../../api/borrowApi";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
 const OfficerBorrowRequestPage = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<BorrowStatus | "all" | "">(
+    "",
+  );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedBorrow, setSelectedBorrow] = useState<Borrow | null>(null);
@@ -137,7 +140,6 @@ const OfficerBorrowRequestPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-14 px-6">
           <div className="flex items-center gap-3">
@@ -155,7 +157,6 @@ const OfficerBorrowRequestPage = () => {
       </header>
 
       <main className="p-6 space-y-6">
-        {/* Stats — primary accent on pending */}
         <div className="grid grid-cols-3 gap-4">
           <Card className="border-yellow-100 dark:border-yellow-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -227,10 +228,9 @@ const OfficerBorrowRequestPage = () => {
           </Card>
         </div>
 
-        {/* Table Card */}
         <Card>
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -264,7 +264,7 @@ const OfficerBorrowRequestPage = () => {
                       </Label>
                       <Select
                         value={statusFilter || "all"}
-                        onValueChange={(v) => {
+                        onValueChange={(v: BorrowStatus | "all") => {
                           setStatusFilter(v === "all" ? "" : v);
                           setPage(1);
                         }}
@@ -351,6 +351,20 @@ const OfficerBorrowRequestPage = () => {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              <Button
+                variant="default"
+                className={` bg-primary hover:bg-blue-800 hover:cursor-pointer  transition-all duration-150`}
+                onClick={() =>
+                  borrowApi.downloadPDF({
+                    startDate,
+                    endDate,
+                    status: statusFilter as BorrowStatus,
+                  })
+                }
+              >
+                Download PDF
+              </Button>
             </div>
           </CardHeader>
 
@@ -517,7 +531,6 @@ const OfficerBorrowRequestPage = () => {
             </div>
           </CardContent>
 
-          {/* Footer */}
           <div className="flex items-center justify-between px-6 py-4 border-t">
             <div className="flex items-center gap-2">
               <Label
@@ -596,12 +609,10 @@ const OfficerBorrowRequestPage = () => {
         </Card>
       </main>
 
-      {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-4xl p-0 overflow-hidden gap-0">
           {selectedBorrow && (
             <>
-              {/* Hero */}
               <div className="relative h-64 w-full overflow-hidden bg-muted shrink-0">
                 {selectedBorrow.item?.image ? (
                   <img
@@ -798,7 +809,6 @@ const OfficerBorrowRequestPage = () => {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="px-5 pb-5 pt-4 border-t">
                 {selectedBorrow.status === "pending" ? (
                   <div className="flex gap-2">
@@ -845,7 +855,6 @@ const OfficerBorrowRequestPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Approve / Reject Confirmation */}
       <AlertDialog
         open={!!actionBorrow}
         onOpenChange={(open) => {

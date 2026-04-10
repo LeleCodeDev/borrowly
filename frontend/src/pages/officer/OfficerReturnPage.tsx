@@ -82,7 +82,6 @@ const OfficerReturnPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-14 px-6">
           <div className="flex items-center gap-3">
@@ -101,7 +100,6 @@ const OfficerReturnPage = () => {
       </header>
 
       <main className="p-6 space-y-6">
-        {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="border-green-100 dark:border-green-900">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -150,7 +148,6 @@ const OfficerReturnPage = () => {
           </Card>
         </div>
 
-        {/* Table Card */}
         <Card>
           <CardHeader className="pb-4">
             <div className="flex justify-end">
@@ -388,7 +385,6 @@ const OfficerReturnPage = () => {
             </Table>
           </CardContent>
 
-          {/* Footer */}
           <div className="flex items-center justify-between px-6 py-4 border-t">
             <div className="flex items-center gap-2">
               <Label
@@ -466,12 +462,10 @@ const OfficerReturnPage = () => {
         </Card>
       </main>
 
-      {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-3xl p-0 overflow-hidden gap-0">
           {selectedReturn && (
             <>
-              {/* Hero */}
               <div className="relative h-52 w-full overflow-hidden bg-muted shrink-0">
                 {selectedReturn.borrow?.item?.image ? (
                   <img
@@ -506,9 +500,7 @@ const OfficerReturnPage = () => {
                 </div>
               </div>
 
-              {/* Three column body */}
               <div className="grid grid-cols-3 divide-x divide-border">
-                {/* Left — Item details */}
                 <div className="p-5 space-y-4">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Item Details
@@ -551,13 +543,11 @@ const OfficerReturnPage = () => {
                   </div>
                 </div>
 
-                {/* Middle — Borrow details */}
                 <div className="p-5 space-y-4 bg-muted/20">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Borrow Details
                   </p>
 
-                  {/* Date grid */}
                   <div className="grid grid-cols-3 divide-x divide-border border rounded-lg overflow-hidden">
                     <div className="flex flex-col gap-0.5 px-2.5 py-2.5 bg-muted/30">
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
@@ -618,7 +608,6 @@ const OfficerReturnPage = () => {
                   )}
                 </div>
 
-                {/* Right — Return details */}
                 <div className="p-5 space-y-4">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Return Details
@@ -687,7 +676,6 @@ const OfficerReturnPage = () => {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="px-5 pb-5 pt-4 border-t bg-muted/20">
                 <Button
                   variant="outline"

@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import Layout from "./components/Layout";
 import { ThemeProvider, useTheme } from "./components/ui/theme-provider";
 import AuthGuard from "./guards/AuthGuard";
+import LandingPage from "./pages/LandingPage";
 import AdminBorrowRequestPage from "./pages/admin/AdminBorrowRequestPage";
 import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -14,12 +15,11 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import BorrowerBorrowPage from "./pages/borrower/BorrowerBorrowPage";
 import BorrowerDashboard from "./pages/borrower/BorrowerDashboard";
-import UserItemPage from "./pages/borrower/BorrowerItemPage";
+import BorrowerItemPage from "./pages/borrower/BorrowerItemPage";
 import BorrowerReturnPage from "./pages/borrower/BorrowerReturnPage";
 import OfficerBorrowRequestPage from "./pages/officer/OfficerBorrowRequestPage";
 import OfficerDashboard from "./pages/officer/OfficerDashboard";
 import OfficerReturnPage from "./pages/officer/OfficerReturnPage";
-import LandingPage from "./pages/LandingPage";
 
 const App = () => {
   return (
@@ -49,7 +49,7 @@ const AppContent = () => {
             }
           >
             <Route path="dashboard" element={<BorrowerDashboard />} />
-            <Route path="items" element={<UserItemPage />} />
+            <Route path="items" element={<BorrowerItemPage />} />
             <Route path="borrow-requests" element={<BorrowerBorrowPage />} />
             <Route path="returns" element={<BorrowerReturnPage />} />
           </Route>

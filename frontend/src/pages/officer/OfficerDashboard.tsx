@@ -35,7 +35,6 @@ const OfficerDashboard = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-15 px-6">
           <div className="flex items-center gap-3">
@@ -153,7 +152,6 @@ const OfficerDashboard = () => {
           </Card>
         </div>
 
-        {/* Quick Actions */}
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">

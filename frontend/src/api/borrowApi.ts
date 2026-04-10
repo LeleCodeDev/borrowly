@@ -10,6 +10,8 @@ import type {
 import { api } from "./api";
 import type { ReturnRequest } from "../types/return";
 
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 export const borrowApi = {
   getAll: (params: BorrowQuery) =>
     api.get<ApiResponse<Borrow[]>>("/borrows", { params }).then((r) => r.data),
@@ -58,4 +60,18 @@ export const borrowApi = {
 
   delete: (id: number) =>
     api.delete<ApiResponse<null>>(`borrows/${id}`).then((r) => r.data),
+
+  downloadPDF: async (params: BorrowQuery) => {
+    const query = new URLSearchParams(params as Record<string, string>);
+    const res = await api.get(`${BASE_URL}/borrows/download-pdf?${query}`, {
+      responseType: "blob",
+    });
+
+    const url = URL.createObjectURL(res.data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "";
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 };

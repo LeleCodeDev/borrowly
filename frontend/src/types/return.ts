@@ -27,9 +27,14 @@ export interface ReturnCard {
 
 export interface ReturnCreateForUserRequest {
   borrowId: number;
-  returnDate: string;
+  returnDate: string | null;
 }
 
 export interface ReturnUpdateForUserRequest {
+  returnDate: string;
+}
+
+export interface ReturnError {
+  borrowId: number;
   returnDate: string;
 }

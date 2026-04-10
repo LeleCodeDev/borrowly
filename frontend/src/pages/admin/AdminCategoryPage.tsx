@@ -172,7 +172,6 @@ const AdminCategoryPage = () => {
 
   return (
     <div className="min-h-screen ">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-15 px-6">
           <div className="flex items-center gap-3">
@@ -376,7 +375,6 @@ const AdminCategoryPage = () => {
             </Table>
           </CardContent>
 
-          {/* Footer */}
           <div className="flex items-center justify-between px-6 py-4 border-t">
             <div className="flex items-center gap-2">
               <Label

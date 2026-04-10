@@ -26,12 +26,10 @@ export const returnApi = {
       .then((r) => r.data),
 
   createForUser: (data: ReturnCreateForUserRequest) =>
-    api.post<ApiResponse<Return>>("/returns", { data }).then((r) => r.data),
+    api.post<ApiResponse<Return>>("/returns", data).then((r) => r.data),
 
   updateForUser: (id: number, data: ReturnUpdateForUserRequest) =>
-    api
-      .put<ApiResponse<Return>>(`/returns/${id}`, { data })
-      .then((r) => r.data),
+    api.put<ApiResponse<Return>>(`/returns/${id}`, data).then((r) => r.data),
 
   delete: (id: number) =>
     api.delete<ApiResponse<null>>(`/returns/${id}`).then((r) => r.data),
