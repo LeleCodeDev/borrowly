@@ -6,9 +6,17 @@ import {
   LogOut,
   Package,
   RotateCcw,
-  Store,
   Users,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -21,9 +29,52 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import BorrowlyLogo from "../assets/BorrowlyHorizontal.png";
 import { useAuth } from "../hooks/api/useAuth";
 import type { UserRole } from "../types/user";
+import { Button } from "./ui/button";
+
+const LogoutModal = ({
+  isOpen,
+  onLogout,
+  onOpenChange,
+}: {
+  isOpen: boolean;
+  onLogout: () => void;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+}) => (
+  <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialogContent className="max-w-sm gap-0 p-0 overflow-hidden">
+      <AlertDialogHeader className="px-6 pt-6 pb-4">
+        <div className="w-full flex items-center justify-center gap-3 mb-3">
+          <AlertDialogTitle className=" text-xl font-semibold">
+            Sign out ?
+          </AlertDialogTitle>
+        </div>
+        <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
+          You'll be returned to the login page. Any unsaved changes will be
+          lost.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+
+      <AlertDialogFooter className="px-6 py-4 border-t border-border bg-muted/30 flex flex-row gap-2 sm:gap-2">
+        <AlertDialogCancel className="flex-1 cursor-pointer">
+          Cancel
+        </AlertDialogCancel>
+        <Button
+          className="flex-1 bg-red-600 hover:bg-red-700 cursor-pointer transition-colors gap-2"
+          onClick={onLogout}
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Sign out
+        </Button>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
 
 const RoleSidebar = ({ role }: { role: UserRole }) => {
   const menuItems = {
@@ -109,24 +160,26 @@ const RoleSidebar = ({ role }: { role: UserRole }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Successfully logout");
+    navigate("/login");
+  };
+
   return (
     <Sidebar className="border-4" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Link
-                to="/admin/dashboard"
-                className="flex gap-3 items-center py-3"
-              >
+            <Link to="/" className="flex gap-3 items-center ">
+              <SidebarMenuButton className="w-full py-7 flex items-center hover:cursor-pointer">
                 <div className="flex items-center gap-2 text-primary">
-                  <Store className="w-7 h-7" />
-                  <span className="text-xl font-bold text-primary">
-                    Borrowly <span className="text-transparent">diosfo</span>
-                  </span>
+                  <img src={BorrowlyLogo} className="max-w-45" />
                 </div>
-              </Link>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -167,8 +220,7 @@ const RoleSidebar = ({ role }: { role: UserRole }) => {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
-                logout();
-                navigate("/login");
+                setIsModalOpen(true);
               }}
               className="hover:cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-red-950/50 dark:hover:bg-red-950 px-4 py-2 transition-colors duration-200 flex items-center gap-2 text-base"
               tooltip="Logout"
@@ -179,6 +231,12 @@ const RoleSidebar = ({ role }: { role: UserRole }) => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      <LogoutModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onLogout={handleLogout}
+      />
     </Sidebar>
   );
 };

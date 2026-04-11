@@ -50,28 +50,26 @@ const BorrowerDashboard = () => {
       </header>
 
       <main className="p-6 space-y-6">
-        <Card className="border-0 bg-linear-to-br from-primary/10 via-primary/5 to-background">
-          <CardContent className="flex items-center gap-5 py-6">
-            <div className="min-w-0">
-              <p className="text-sm text-muted-foreground">{greeting()},</p>
-              <p className="text-2xl font-bold tracking-tight truncate">
-                {user?.username ?? "—"}
-              </p>
-              <div className="flex items-center gap-3 mt-1 flex-wrap">
-                {user?.email && (
-                  <span className="text-xs text-muted-foreground truncate">
-                    {user.email}
-                  </span>
-                )}
-                {user?.email && user?.phone && (
-                  <span className="text-muted-foreground/40 text-xs">·</span>
-                )}
-                {user?.phone && (
-                  <span className="text-xs text-muted-foreground">
-                    {user.phone}
-                  </span>
-                )}
-              </div>
+        <Card className="border-primary/20 dark:border-primary ">
+          <CardContent className="py-6">
+            <p className="text-sm text-muted-foreground">{greeting()}</p>
+            <p className="text-3xl font-bold tracking-tight">
+              {user?.username ?? "—"}
+            </p>
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
+              {user?.email && (
+                <span className="text-xs text-muted-foreground">
+                  {user.email}
+                </span>
+              )}
+              {user?.email && user?.phone && (
+                <span className="text-muted-foreground/40 text-xs">·</span>
+              )}
+              {user?.phone && (
+                <span className="text-xs text-muted-foreground">
+                  {user.phone}
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -149,7 +147,7 @@ const BorrowerDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <Button
-              className="w-full justify-between hover:cursor-pointer"
+              className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
               asChild
             >
               <Link to="/items">
@@ -158,8 +156,7 @@ const BorrowerDashboard = () => {
               </Link>
             </Button>
             <Button
-              className="w-full justify-between hover:cursor-pointer"
-              variant="outline"
+              className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
               asChild
             >
               <Link to="/borrow-requests">
@@ -168,8 +165,7 @@ const BorrowerDashboard = () => {
               </Link>
             </Button>
             <Button
-              className="w-full justify-between hover:cursor-pointer"
-              variant="outline"
+              className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
               asChild
             >
               <Link to="/returns">

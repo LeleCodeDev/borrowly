@@ -124,10 +124,12 @@ func (s *ReturnService) CreateForUser(ctx context.Context, currentUser model.Use
 		}
 
 		item := &borrow.Item
-		item.Quantity += borrow.Quantity
-		item.Status = model.ItemStatusAvailable
-		if err := txItemRepo.Update(ctx, item); err != nil {
-			return err
+		if item.ID > 0 {
+			item.Quantity += borrow.Quantity
+			item.Status = model.ItemStatusAvailable
+			if err := txItemRepo.Update(ctx, item); err != nil {
+				return err
+			}
 		}
 
 		borrow.Status = model.BorrowStatusReturned
@@ -227,19 +229,21 @@ func (s *ReturnService) Delete(ctx context.Context, id int, currentUser model.Us
 		borrow := &returnBorrow.Borrow
 		item := &borrow.Item
 
-		if item.Quantity < borrow.Quantity {
-			return errors.BadRequest("Item does not have enough quantity")
-		}
+		if item.ID > 0 {
+			if item.Quantity < borrow.Quantity {
+				return errors.BadRequest("Item does not have enough quantity")
+			}
 
-		item.Quantity -= borrow.Quantity
-		if item.Quantity <= 0 {
-			item.Status = model.ItemStatusUnavailable
-		} else {
-			item.Status = model.ItemStatusAvailable
-		}
+			item.Quantity -= borrow.Quantity
+			if item.Quantity <= 0 {
+				item.Status = model.ItemStatusUnavailable
+			} else {
+				item.Status = model.ItemStatusAvailable
+			}
 
-		if err := txItemRepo.Update(ctx, item); err != nil {
-			return err
+			if err := txItemRepo.Update(ctx, item); err != nil {
+				return err
+			}
 		}
 
 		borrow.Status = model.BorrowStatusBorrowed

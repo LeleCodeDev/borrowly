@@ -81,7 +81,7 @@ const OfficerReturnPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen ">
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
         <div className="flex w-full items-center justify-between h-14 px-6">
           <div className="flex items-center gap-3">
@@ -164,7 +164,7 @@ const OfficerReturnPage = () => {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
+                <PopoverContent className="min-w-88" align="end">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-sm">Filters</p>
@@ -397,7 +397,7 @@ const OfficerReturnPage = () => {
                 defaultValue="10"
                 onValueChange={(v) => setSize(Number(v))}
               >
-                <SelectTrigger className="w-16 h-8" id="rows-per-page">
+                <SelectTrigger className="" id="rows-per-page">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent align="start">

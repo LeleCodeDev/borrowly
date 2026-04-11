@@ -1,4 +1,9 @@
 import type React from "react";
+import type {
+  ReturnError,
+  ReturnUpdateForUserRequest,
+} from "../../types/return";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,31 +11,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import type {
-  ReturnCreateForUserRequest,
-  ReturnError,
-} from "../../types/return";
-import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Spinner } from "../ui/spinner";
+import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { Spinner } from "../ui/spinner";
 
-interface CreateReturnModalProps {
+interface UpdateReturnModalProps {
   isOpen: boolean;
-  formData: ReturnCreateForUserRequest;
+  formData: ReturnUpdateForUserRequest;
   fieldErrors: ReturnError | null;
   isPending: boolean;
   onChange: (
-    field: keyof ReturnCreateForUserRequest,
-    value: ReturnCreateForUserRequest[keyof ReturnCreateForUserRequest],
+    field: keyof ReturnUpdateForUserRequest,
+    value: ReturnUpdateForUserRequest[keyof ReturnUpdateForUserRequest],
   ) => void;
   onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
 }
 
-const CreateReturnModal: React.FC<CreateReturnModalProps> = ({
+const UpdateReturnModal: React.FC<UpdateReturnModalProps> = ({
   isOpen,
   formData,
   fieldErrors,
@@ -45,9 +45,7 @@ const CreateReturnModal: React.FC<CreateReturnModalProps> = ({
       <DialogContent className="sm:max-w-md p-5 overflow-hidden gap-0">
         <form onSubmit={onSubmit}>
           <DialogHeader>
-            <DialogTitle className="text-xl">
-              Create Return for this borrow
-            </DialogTitle>
+            <DialogTitle className="text-xl">Update Return</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <Separator />
@@ -90,7 +88,7 @@ const CreateReturnModal: React.FC<CreateReturnModalProps> = ({
                   Loading...
                 </span>
               ) : (
-                <span>Submit Return</span>
+                <span>Update Return</span>
               )}
             </Button>
           </DialogFooter>
@@ -100,4 +98,4 @@ const CreateReturnModal: React.FC<CreateReturnModalProps> = ({
   );
 };
 
-export default CreateReturnModal;
+export default UpdateReturnModal;

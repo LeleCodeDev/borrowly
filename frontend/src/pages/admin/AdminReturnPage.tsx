@@ -4,7 +4,9 @@ import {
   Eye,
   Filter,
   Package,
+  Pencil,
   RotateCcw,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
@@ -45,9 +47,24 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { useReturnCard, useReturns } from "../../hooks/api/useReturn";
-import type { Return } from "../../types/return";
+import {
+  useDeleteReturn,
+  useReturnCard,
+  useReturns,
+  useUpdateReturnForUser,
+} from "../../hooks/api/useReturn";
+import type {
+  Return,
+  ReturnError,
+  ReturnUpdateForUserRequest,
+} from "../../types/return";
 import { formatDate } from "../../lib/formatDate";
+import UpdateReturnModal from "../../components/return/UpdateReturnModal";
+import { toast } from "sonner";
+import type { AxiosError } from "axios";
+import type { ApiError } from "../../types/apiResponse";
+import { formatDateValue } from "../../lib/formatDateValue";
+import DeleteModal from "../../components/DeleteModal";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -56,8 +73,18 @@ const AdminReturnPage = () => {
   const [size, setSize] = useState(10);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedReturn, setSelectedReturn] = useState<Return | null>(null);
+
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [selectedReturn, setSelectedReturn] = useState<Return | null>(null);
+  const [deleteReturnId, setDeleteReturnId] = useState<number | null>(null);
+  const [updateReturnId, setUpdateReturnId] = useState<number | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ReturnError | null>(null);
+  const [returnForm, setReturnForm] = useState<ReturnUpdateForUserRequest>({
+    returnDate: null,
+  });
 
   const hasActiveFilters = !!startDate || !!endDate;
 
@@ -67,9 +94,12 @@ const AdminReturnPage = () => {
     startDate: startDate || undefined,
     endDate: endDate || undefined,
   });
-
   const { data: dashboardData, isPending: dashboardDataIsPending } =
     useReturnCard();
+
+  const updateReturnForUser = useUpdateReturnForUser();
+  const deleteReturn = useDeleteReturn();
+
   const returns = data?.data;
   const totalPages = data?.pagination?.totalPages ?? 1;
 
@@ -77,6 +107,64 @@ const AdminReturnPage = () => {
     setStartDate("");
     setEndDate("");
     setPage(1);
+  };
+
+  const handleChange = (
+    field: keyof ReturnUpdateForUserRequest,
+    value: ReturnUpdateForUserRequest[keyof ReturnUpdateForUserRequest],
+  ) => {
+    setReturnForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleOpenDialog = (ret: Return) => {
+    setFieldErrors(null);
+    setUpdateReturnId(ret.id);
+    setReturnForm({
+      returnDate: formatDateValue(ret.returnDate),
+    });
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateReturn = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (updateReturnId) {
+      updateReturnForUser.mutate(
+        { id: updateReturnId, data: returnForm },
+        {
+          onSuccess: (data) => {
+            toast.success(data.message);
+            setIsUpdateModalOpen(false);
+            setUpdateReturnId(null);
+          },
+          onError: (err) => {
+            const error = err as AxiosError<ApiError<ReturnError>>;
+            toast.error(
+              error.response?.data.message || "Update borrow request failed",
+            );
+            if (error.response?.data.errors) {
+              setFieldErrors(error.response.data.errors);
+            }
+          },
+        },
+      );
+    }
+  };
+
+  const handleDelete = () => {
+    if (deleteReturnId) {
+      deleteReturn.mutate(deleteReturnId, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          setIsDeleteModalOpen(false);
+          setDeleteReturnId(null);
+        },
+        onError: (err) => {
+          const error = err as AxiosError<ApiError<null>>;
+          toast.error(error.response?.data.message || "Delete borrow failed");
+        },
+      });
+    }
   };
 
   return (
@@ -165,7 +253,7 @@ const AdminReturnPage = () => {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
+                <PopoverContent className="min-w-88" align="end">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-sm">Filters</p>
@@ -195,7 +283,7 @@ const AdminReturnPage = () => {
                               setStartDate(e.target.value);
                               setPage(1);
                             }}
-                            className="h-9 text-sm"
+                            className="w-full text-sm"
                           />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -264,7 +352,7 @@ const AdminReturnPage = () => {
                   <TableHead className="w-24 font-semibold text-foreground">
                     Fine
                   </TableHead>
-                  <TableHead className="w-14 pr-6"></TableHead>
+                  <TableHead className="w-28 pr-6"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -370,13 +458,36 @@ const AdminReturnPage = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 hover:cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-8 w-8 hover:cursor-pointer "
                           onClick={() => {
                             setSelectedReturn(ret);
                             setIsDetailOpen(true);
                           }}
                         >
                           <Eye className="h-3.5 w-3.5" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:cursor-pointer"
+                          onClick={() => {
+                            handleOpenDialog(ret);
+                          }}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:cursor-pointer hover:bg-red-50 dark:hover:bg-red-950"
+                          onClick={() => {
+                            setDeleteReturnId(ret.id);
+                            setIsDeleteModalOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -399,7 +510,7 @@ const AdminReturnPage = () => {
                 defaultValue="10"
                 onValueChange={(v) => setSize(Number(v))}
               >
-                <SelectTrigger className="w-16 h-8" id="rows-per-page">
+                <SelectTrigger className="" id="rows-per-page">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent align="start">
@@ -464,12 +575,10 @@ const AdminReturnPage = () => {
         </Card>
       </main>
 
-      {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-3xl p-0 overflow-hidden gap-0">
           {selectedReturn && (
             <>
-              {/* Hero */}
               <div className="relative h-52 w-full overflow-hidden bg-muted shrink-0">
                 {selectedReturn.borrow?.item?.image ? (
                   <img
@@ -504,9 +613,7 @@ const AdminReturnPage = () => {
                 </div>
               </div>
 
-              {/* Three column body */}
               <div className="grid grid-cols-3 divide-x divide-border">
-                {/* Left — Item details */}
                 <div className="p-5 space-y-4">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Item Details
@@ -549,13 +656,11 @@ const AdminReturnPage = () => {
                   </div>
                 </div>
 
-                {/* Middle — Borrow details */}
                 <div className="p-5 space-y-4 bg-muted/20">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Borrow Details
                   </p>
 
-                  {/* Date grid */}
                   <div className="grid grid-cols-3 divide-x divide-border border rounded-lg overflow-hidden">
                     <div className="flex flex-col gap-0.5 px-2.5 py-2.5 bg-muted/30">
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
@@ -616,7 +721,6 @@ const AdminReturnPage = () => {
                   )}
                 </div>
 
-                {/* Right — Return details */}
                 <div className="p-5 space-y-4">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                     Return Details
@@ -685,7 +789,6 @@ const AdminReturnPage = () => {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="px-5 pb-5 pt-4 border-t bg-muted/20">
                 <Button
                   variant="outline"
@@ -699,6 +802,28 @@ const AdminReturnPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <UpdateReturnModal
+        isOpen={isUpdateModalOpen}
+        formData={returnForm}
+        fieldErrors={fieldErrors}
+        isPending={updateReturnForUser.isPending}
+        onChange={handleChange}
+        onSubmit={handleUpdateReturn}
+        onOpenChange={setIsUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+      />
+
+      <DeleteModal
+        title={"Delete Return"}
+        description={
+          "This action cannot be undone. This will permanently delete the return history from the system."
+        }
+        isOpen={isDeleteModalOpen}
+        isPending={deleteReturn.isPending}
+        onDelete={handleDelete}
+        onOpenChange={setIsDeleteModalOpen}
+      />
     </div>
   );
 };

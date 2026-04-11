@@ -1,29 +1,25 @@
-import { CheckCircle, ClipboardList, Package, XCircle } from "lucide-react";
-import type React from "react";
-import { Dialog, DialogContent } from "../../components/ui/dialog";
-import type { Borrow } from "../../types/borrow";
-import { Button } from "../ui/button";
+import { ClipboardList, Package } from "lucide-react";
+import { Dialog, DialogContent } from "../ui/dialog";
 import BorrowStatusBadge from "../ui/BorrowStatusBadge";
+import { Button } from "../ui/button";
+import type React from "react";
+import type { Borrow } from "../../types/borrow";
 import { formatDate } from "../../lib/formatDate";
 
-interface OfficerBorrowDetailProps {
+interface AdminBorrowModalProps {
   isOpen: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   selectedBorrow: Borrow | null;
   onClose: () => void;
-  onApproveBorrow: (id: number) => void;
-  onRejectBorrow: (id: number) => void;
 }
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
-const OfficerBorrowDetail: React.FC<OfficerBorrowDetailProps> = ({
+const AdminBorrowModal: React.FC<AdminBorrowModalProps> = ({
   isOpen,
-  onOpenChange,
   selectedBorrow,
+  onOpenChange,
   onClose,
-  onApproveBorrow,
-  onRejectBorrow,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -227,39 +223,13 @@ const OfficerBorrowDetail: React.FC<OfficerBorrowDetailProps> = ({
             </div>
 
             <div className="px-5 pb-5 pt-4 border-t">
-              {selectedBorrow.status === "pending" ? (
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1 gap-2 hover:cursor-pointer"
-                    onClick={() => {
-                      onApproveBorrow(selectedBorrow.id);
-                      onClose();
-                    }}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    Approve
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 gap-2 hover:cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/30"
-                    onClick={() => {
-                      onRejectBorrow(selectedBorrow.id);
-                      onClose();
-                    }}
-                  >
-                    <XCircle className="h-4 w-4" />
-                    Reject
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="outline"
-                  className="w-full hover:cursor-pointer"
-                  onClick={onClose}
-                >
-                  Close
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                className="w-full hover:cursor-pointer"
+                onClick={onClose}
+              >
+                Close
+              </Button>
             </div>
           </>
         )}
@@ -268,4 +238,4 @@ const OfficerBorrowDetail: React.FC<OfficerBorrowDetailProps> = ({
   );
 };
 
-export default OfficerBorrowDetail;
+export default AdminBorrowModal;

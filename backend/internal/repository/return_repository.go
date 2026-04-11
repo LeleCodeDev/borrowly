@@ -110,7 +110,7 @@ func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 }
 
 func (r *ReturnRepository) GetByID(ctx context.Context, id int) (*model.Return, error) {
-	var returnBorrow *model.Return
+	var returnBorrow model.Return
 
 	if err := r.db.WithContext(ctx).
 		Preload("Borrow").
@@ -118,7 +118,7 @@ func (r *ReturnRepository) GetByID(ctx context.Context, id int) (*model.Return, 
 		Preload("Borrow.ReviewedUser").
 		Preload("Borrow.Item").
 		Preload("Borrow.Item.Category").
-		First(returnBorrow, id).Error; err != nil {
+		First(&returnBorrow, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -126,7 +126,7 @@ func (r *ReturnRepository) GetByID(ctx context.Context, id int) (*model.Return, 
 		return nil, err
 	}
 
-	return returnBorrow, nil
+	return &returnBorrow, nil
 }
 
 func (r *ReturnRepository) CountAll(ctx context.Context) (int64, error) {

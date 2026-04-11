@@ -31,7 +31,7 @@ export interface ReturnCreateForUserRequest {
 }
 
 export interface ReturnUpdateForUserRequest {
-  returnDate: string;
+  returnDate: string | null;
 }
 
 export interface ReturnError {

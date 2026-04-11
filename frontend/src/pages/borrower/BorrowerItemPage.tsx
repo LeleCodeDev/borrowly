@@ -142,15 +142,7 @@ const BorrowerItemPage = () => {
       </header>
 
       <main className="p-6 space-y-8">
-        {/* Hero search section */}
         <div className="relative rounded-2xl overflow-hidden border bg-card p-8 md:p-10">
-          {/* Background gradient blobs */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-primary/5 blur-2xl" />
-            <div className="absolute top-1/2 left-1/3 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
-          </div>
-
           <div className="relative z-10">
             {/* Badge */}
             {(filterCategoryId !== 0 ||
@@ -419,9 +411,8 @@ const BorrowerItemPage = () => {
             {items?.map((item) => (
               <div
                 key={item.id}
-                className="group bg-card border rounded-xl flex flex-col overflow-hidden hover:bg-muted/30 transition-colors duration-200"
+                className="group bg-card border rounded-xl shadow-lg flex flex-col overflow-hidden hover:bg-muted/30 transition-colors duration-200"
               >
-                {/* Image */}
                 <div className="relative aspect-video w-full overflow-hidden bg-muted">
                   {item.image ? (
                     <img
@@ -430,15 +421,13 @@ const BorrowerItemPage = () => {
                       className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center">
+                    <div className="flex h-full w-full items-center justify-center bg-secondary">
                       <Package className="h-8 w-8 text-muted-foreground/20" />
                     </div>
                   )}
                 </div>
 
-                {/* Body */}
                 <div className="flex flex-col gap-3 p-4 flex-1">
-                  {/* Meta row */}
                   <div className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
                       <Tag className="h-3 w-3" />

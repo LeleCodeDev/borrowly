@@ -129,9 +129,7 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Quick Actions & Recent Activity */}
         <div className="grid gap-4 md:grid-cols-2">
-          {/* Quick Actions */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -148,7 +146,7 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
-                className="w-full justify-between hover:cursor-pointer"
+                className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
                 asChild
               >
                 <Link to="/admin/items">
@@ -157,8 +155,7 @@ const AdminDashboard = () => {
                 </Link>
               </Button>
               <Button
-                className="w-full justify-between hover:cursor-pointer"
-                variant="outline"
+                className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
                 asChild
               >
                 <Link to="/admin/categories">
@@ -167,8 +164,7 @@ const AdminDashboard = () => {
                 </Link>
               </Button>
               <Button
-                className="w-full justify-between hover:cursor-pointer"
-                variant="outline"
+                className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
                 asChild
               >
                 <Link to="/admin/users">
@@ -177,8 +173,7 @@ const AdminDashboard = () => {
                 </Link>
               </Button>
               <Button
-                className="w-full justify-between hover:cursor-pointer"
-                variant="outline"
+                className="w-full justify-between hover:cursor-pointer border bg-background text-black shadow-xs dark:border-input dark:bg-input/30 dark:text-white hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary transition-colors duration-300"
                 asChild
               >
                 <Link to="/admin/borrow-requests">
@@ -189,7 +184,6 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
