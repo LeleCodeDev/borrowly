@@ -72,7 +72,9 @@ const AdminLogPage = () => {
         <div className="space-y-3">
           {isPending ? (
             <div className="flex flex-col h-full justify-center items-center gap-3 py-20">
-              <Spinner className="w-14 h-14" />
+              <Spinner className="w-10 h-10" />
+
+              <p className="text-sm text-muted-foreground">Loading users...</p>
             </div>
           ) : logs?.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-20">
@@ -131,86 +133,82 @@ const AdminLogPage = () => {
         </div>
 
         {/* Footer Pagination */}
-        {!isPending && logs && logs.length > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Label
-                htmlFor="rows-per-page"
-                className="text-sm text-muted-foreground whitespace-nowrap"
-              >
-                Rows per page
-              </Label>
-              <Select
-                defaultValue="10"
-                onValueChange={(v) => {
-                  setSize(Number(v));
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="h-8 mr-2" id="rows-per-page">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent align="start">
-                  <SelectGroup>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {data?.pagination && (
-                <span className="text-xs text-muted-foreground">
-                  {(page - 1) * size + 1}–
-                  {Math.min(page * size, data.pagination.totalPages)} of{" "}
-                  {data.pagination.totalPages}
-                </span>
-              )}
-            </div>
-
-            {totalPages > 1 && (
-              <Pagination className="mx-0 w-auto">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                      className={
-                        page === 1
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (p) => (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          isActive={page === p}
-                          onClick={() => setPage(p)}
-                          className="cursor-pointer"
-                        >
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ),
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() =>
-                        setPage((p) => Math.min(p + 1, totalPages))
-                      }
-                      className={
-                        page === totalPages
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Label
+              htmlFor="rows-per-page"
+              className="text-sm text-muted-foreground whitespace-nowrap"
+            >
+              Rows per page
+            </Label>
+            <Select
+              defaultValue="10"
+              onValueChange={(v) => {
+                setSize(Number(v));
+              }}
+            >
+              <SelectTrigger className="h-8 mr-2" id="rows-per-page">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent align="start">
+                <SelectGroup>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {data?.pagination && (
+              <span className="text-xs text-muted-foreground">
+                {(page - 1) * size + 1}–
+                {Math.min(page * size, data.pagination.totalPages)} of{" "}
+                {data.pagination.totalPages}
+              </span>
             )}
           </div>
-        )}
+
+          {totalPages > 1 && (
+            <Pagination className="mx-0 w-auto">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    className={
+                      page === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (p) => (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        isActive={page === p}
+                        onClick={() => setPage(p)}
+                        className="cursor-pointer"
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                    className={
+                      page === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
       </main>
     </div>
   );

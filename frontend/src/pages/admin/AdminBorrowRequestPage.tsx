@@ -123,6 +123,7 @@ const AdminBorrowRequestPage = () => {
   });
   const { data: usersData, isPending: userIsPending } = useUsers({
     unpage: true,
+    role: "borrower",
   });
   const { data: itemData, isPending: itemIsPending } = useItems({
     unpage: true,

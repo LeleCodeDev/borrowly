@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { returnApi } from "../../api/returnApi";
 import type {
   ReturnQuery,
@@ -30,12 +30,20 @@ export const useMyReturns = (params: ReturnQuery = {}) =>
   });
 
 export const useCreateReturnForUser = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: returnApi.createForUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["returns"] });
+      queryClient.invalidateQueries({ queryKey: ["return-card"] });
+      queryClient.invalidateQueries({ queryKey: ["borrows"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+    },
   });
 };
 
 export const useUpdateReturnForUser = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       id,
@@ -44,11 +52,25 @@ export const useUpdateReturnForUser = () => {
       id: number;
       data: ReturnUpdateForUserRequest;
     }) => returnApi.updateForUser(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["returns"] });
+      queryClient.invalidateQueries({ queryKey: ["return-card"] });
+      queryClient.invalidateQueries({ queryKey: ["borrows"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+    },
   });
 };
 
 export const useDeleteReturn = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: returnApi.delete,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["returns"] });
+      queryClient.invalidateQueries({ queryKey: ["return-card"] });
+      queryClient.invalidateQueries({ queryKey: ["borrows"] });
+      queryClient.invalidateQueries({ queryKey: ["borrow-card"] });
+    },
   });
 };
