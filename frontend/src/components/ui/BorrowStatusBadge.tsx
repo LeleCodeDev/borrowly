@@ -32,6 +32,11 @@ const BorrowStatusBadge: React.FC<BorrowStatusBadgeProps> = ({ status }) => {
       className:
         "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:ring-blue-800",
     },
+    canceled: {
+      label: "Canceled",
+      className:
+        "bg-gray-50 text-gray-700 ring-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:ring-gray-700",
+    },
   };
 
   return (

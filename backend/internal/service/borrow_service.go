@@ -383,6 +383,46 @@ func (s *BorrowService) Reject(ctx context.Context, currentUser model.User, id i
 	return mapper.ToBorrowResponse(rejectedBorrow), nil
 }
 
+func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id int) (dto.BorrowResponse, error) {
+	var canceledBorrow *model.Borrow
+
+	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
+		txBorrowRepo := s.repo.WithTx(tx)
+		txLogRepo := s.logRepo.WithTx(tx)
+
+		borrow, err := txBorrowRepo.GetByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if borrow == nil {
+			return errors.NotFound(fmt.Sprintf("Borrow not found with ID: %d", id))
+		}
+
+		if borrow.Status != model.BorrowStatusPending {
+			return errors.BadRequest("Borrow status is not pending")
+		}
+
+		borrow.Status = model.BorrowStatusCanceled
+
+		if err := txBorrowRepo.Update(ctx, borrow); err != nil {
+			return err
+		}
+
+		log := mapper.ToLogActivityModel(currentUser, model.ActivityCanceledBorrow)
+		if err := txLogRepo.Create(ctx, log); err != nil {
+			return err
+		}
+
+		canceledBorrow = borrow
+
+		return nil
+	}); err != nil {
+		return dto.BorrowResponse{}, err
+	}
+
+	return mapper.ToBorrowResponse(rejectedBorrow), nil
+}
+
 func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id int) (dto.BorrowResponse, error) {
 	var borrowedBorrow *model.Borrow
 
@@ -518,7 +558,7 @@ func (s *BorrowService) Delete(ctx context.Context, id int, currentUser model.Us
 		if borrow.Status == model.BorrowStatusApproved ||
 			borrow.Status == model.BorrowStatusBorrowed ||
 			borrow.Status == model.BorrowStatusReturned {
-			return errors.BadRequest("Only pending and rejected borrow can be deleted")
+			return errors.BadRequest("Only pending, rejected, and canceled borrow can be deleted")
 		}
 
 		if err := txBorrowRepo.Delete(ctx, borrow); err != nil {

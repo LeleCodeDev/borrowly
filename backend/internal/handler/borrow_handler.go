@@ -243,6 +243,26 @@ func (h *BorrowHandler) RejectBorrow(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Borrow successfully rejected", borrow)
 }
 
+func (h *BorrowHandler) CancelBorrow(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+
+		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		return
+	}
+
+	ctx := c.Request.Context()
+	currentUSer := c.MustGet("user").(model.User)
+
+	borrow, err := h.Service.Cancel(ctx, currentUSer, id)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Borrow successfully canceled", borrow)
+}
+
 func (h *BorrowHandler) ConfirmBorrow(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

@@ -83,6 +83,7 @@ func (a *App) RegisterRoute() {
 		borrower.POST("/my-borrows", a.BorrowHandler.CreateBorrow)
 		borrower.PUT("/my-borrows/:id/confirm", a.BorrowHandler.ConfirmBorrow)
 		borrower.PUT("/my-borrows/:id/return", a.BorrowHandler.ReturnedBorrow)
+		borrower.PUT("/my-borrows/:id/cancel", a.BorrowHandler.CancelBorrow)
 
 		borrower.GET("/my-returns", a.ReturnHandler.GetAllReturnsByUser)
 		borrower.GET("/my-returns/card", a.ReturnHandler.GetReturnCardByUser)

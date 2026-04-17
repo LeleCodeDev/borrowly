@@ -15,6 +15,7 @@ const (
 	BorrowStatusApproved BorrowStatus = "approved"
 	BorrowStatusBorrowed BorrowStatus = "borrowed"
 	BorrowStatusReturned BorrowStatus = "returned"
+	BorrowStatusCanceled BorrowStatus = "canceled"
 )
 
 type Borrow struct {
@@ -30,7 +31,7 @@ type Borrow struct {
 	OfficerNote    *string        `json:"officerNote" gorm:"type:text"`
 	BorrowDate     time.Time      `json:"borrowDate" gorm:"not null;type:date"`
 	ReturnDate     time.Time      `json:"returnDate" gorm:"type:date"`
-	Status         BorrowStatus   `json:"status" gorm:"type:enum('pending', 'rejected', 'approved', 'borrowed', 'returned');default:pending;not null"`
+	Status         BorrowStatus   `json:"status" gorm:"type:enum('pending', 'rejected', 'approved', 'borrowed', 'returned', 'canceled');default:pending;not null"`
 	ReviewAt       *time.Time     `json:"reviewAt" gorm:"type:date"`
 	CreatedAt      time.Time      `json:"createdAt"`
 	UpdatedAt      time.Time      `json:"updatedAt"`

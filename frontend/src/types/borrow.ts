@@ -7,7 +7,8 @@ export type BorrowStatus =
   | "rejected"
   | "approved"
   | "borrowed"
-  | "returned";
+  | "returned"
+  | "canceled";
 
 export interface Borrow {
   id: number;
