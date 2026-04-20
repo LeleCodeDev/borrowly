@@ -420,7 +420,7 @@ func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id i
 		return dto.BorrowResponse{}, err
 	}
 
-	return mapper.ToBorrowResponse(rejectedBorrow), nil
+	return mapper.ToBorrowResponse(canceledBorrow), nil
 }
 
 func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id int) (dto.BorrowResponse, error) {

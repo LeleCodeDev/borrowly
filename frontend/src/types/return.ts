@@ -6,7 +6,6 @@ export interface Return {
   borrow: Borrow;
   returnDate: string;
   borrowerNote: string | null;
-  fine: number;
   createdAt: string;
   updatedAt: string;
 }

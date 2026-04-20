@@ -50,7 +50,7 @@ export const borrowApi = {
 
   cancel: (id: number) =>
     api
-      .put<ApiResponse<Borrow>>(`/my-borrows/${id}/canceled`)
+      .put<ApiResponse<Borrow>>(`/my-borrows/${id}/cancel`)
       .then((r) => r.data),
 
   confirm: (id: number) =>

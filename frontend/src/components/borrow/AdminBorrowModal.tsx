@@ -31,7 +31,7 @@ const AdminBorrowModal: React.FC<AdminBorrowModalProps> = ({
                 <img
                   src={BaseURL + "/" + selectedBorrow.item.image}
                   alt={selectedBorrow.item.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
@@ -185,7 +185,7 @@ const AdminBorrowModal: React.FC<AdminBorrowModalProps> = ({
                       </p>
                       <div className="p-2.5 rounded-lg border bg-muted/20 space-y-0.5">
                         <p className="text-sm font-semibold leading-tight">
-                          {selectedBorrow.reviewedUser.username}
+                          {selectedBorrow.reviewedUser.username ?? "N/A"}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {selectedBorrow.reviewedUser.email}

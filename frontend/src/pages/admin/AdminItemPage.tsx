@@ -424,7 +424,7 @@ const AdminItemPage = () => {
                     <img
                       src={BaseURL + "/" + item.image}
                       alt={item.name}
-                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 bg-muted/50">
@@ -474,7 +474,7 @@ const AdminItemPage = () => {
                       </span>
                     </div>
 
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"

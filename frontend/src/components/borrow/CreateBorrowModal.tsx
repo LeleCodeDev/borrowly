@@ -40,17 +40,17 @@ const CreateBorrowModal: React.FC<CreateBorrowModalProps> = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-md md:min-w-lg p-0 overflow-hidden gap-0">
           <form onSubmit={onSubmit}>
             {selectedItem && (
               <>
                 {/* Hero image */}
-                <div className="relative h-44 w-full overflow-hidden bg-muted shrink-0">
+                <div className="relative h-80 w-full overflow-hidden bg-muted shrink-0">
                   {selectedItem.image ? (
                     <img
                       src={BaseURL + "/" + selectedItem.image}
                       alt={selectedItem.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">

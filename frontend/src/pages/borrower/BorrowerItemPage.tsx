@@ -125,7 +125,7 @@ const BorrowerItemPage = () => {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-100">
+      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-20">
         <div className="flex w-full items-center justify-between h-14 px-6">
           <div className="flex items-center gap-3">
             <SidebarTrigger size="icon-lg" className="hover:cursor-pointer" />
@@ -413,12 +413,12 @@ const BorrowerItemPage = () => {
                 key={item.id}
                 className="group bg-card border rounded-xl shadow-lg flex flex-col overflow-hidden hover:bg-muted/30 transition-colors duration-200"
               >
-                <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                <div className="relative p-2 aspect-video w-full overflow-hidden bg-muted">
                   {item.image ? (
                     <img
                       src={BaseURL + "/" + item.image}
                       alt={item.name}
-                      className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                      className="h-full w-full object-contain group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-secondary">

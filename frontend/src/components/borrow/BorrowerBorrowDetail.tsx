@@ -1,7 +1,7 @@
 import type React from "react";
 import { Dialog, DialogContent } from "../../components/ui/dialog";
 import type { Borrow } from "../../types/borrow";
-import { CheckCircle, Package, RotateCcw } from "lucide-react";
+import { CheckCircle, Package, RotateCcw, XCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import BorrowStatusBadge from "../ui/BorrowStatusBadge";
 import { formatDate } from "../../lib/formatDate";
@@ -13,6 +13,7 @@ interface BorrowerBorrowDetailProps {
   onClose: () => void;
   onConfirmBorrow: (id: number) => void;
   onReturnBorrow: (id: number) => void;
+  onCancelBorrow: (id: number) => void;
 }
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
@@ -24,6 +25,7 @@ const BorrowerBorrowDetail: React.FC<BorrowerBorrowDetailProps> = ({
   onClose,
   onConfirmBorrow,
   onReturnBorrow,
+  onCancelBorrow,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -36,7 +38,7 @@ const BorrowerBorrowDetail: React.FC<BorrowerBorrowDetailProps> = ({
                 <img
                   src={BaseURL + "/" + selectedBorrow.item.image}
                   alt={selectedBorrow.item.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
@@ -217,6 +219,26 @@ const BorrowerBorrowDetail: React.FC<BorrowerBorrowDetailProps> = ({
                   >
                     <CheckCircle className="h-4 w-4" />
                     Confirm Pickup
+                  </Button>
+                </div>
+              ) : selectedBorrow.status === "pending" ? (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 hover:cursor-pointer"
+                    onClick={onClose}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="flex-1 gap-2 hover:cursor-pointer text-white hover:text-gray-100  dark:text-red-400 dark:hover:text-red-300 bg-red-600 hover:bg-red-700 dark:bg-red-950/50 dark:hover:bg-red-950 px-4 py-2 transition-colors duration-200 flex items-center text-base"
+                    onClick={() => {
+                      onCancelBorrow(selectedBorrow.id);
+                      onClose();
+                    }}
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Cancel Borrow
                   </Button>
                 </div>
               ) : selectedBorrow.status === "borrowed" ? (

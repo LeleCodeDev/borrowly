@@ -489,31 +489,31 @@ const AdminBorrowRequestPage = () => {
 
           <CardContent className="p-0">
             <div className="overflow-x-auto w-full">
-              <Table className="table-fixed w-full min-w-175">
+              <Table className="w-full min-w-max">
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="w-14 pl-6 font-semibold text-foreground">
+                    <TableHead className="pl-6 font-semibold text-foreground">
                       No
                     </TableHead>
                     <TableHead className="font-semibold text-foreground">
                       Item
                     </TableHead>
-                    <TableHead className="w-28 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Borrower
                     </TableHead>
-                    <TableHead className="w-28 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Reviewed By
                     </TableHead>
-                    <TableHead className="w-28 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Borrow Date
                     </TableHead>
-                    <TableHead className="w-28 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Return Date
                     </TableHead>
-                    <TableHead className="w-24 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Status
                     </TableHead>
-                    <TableHead className="w-28 pr-6 text-center font-semibold text-foreground" />
+                    <TableHead className="sticky right-0 pr-6" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -565,7 +565,7 @@ const AdminBorrowRequestPage = () => {
                                 <img
                                   src={BaseURL + "/" + borrow.item.image}
                                   alt={borrow.item.name}
-                                  className="h-full w-full object-cover"
+                                  className="h-full w-full object-contain"
                                 />
                               ) : (
                                 <div className="h-full w-full flex items-center justify-center">
@@ -609,7 +609,7 @@ const AdminBorrowRequestPage = () => {
                         <TableCell>
                           <BorrowStatusBadge status={borrow.status} />
                         </TableCell>
-                        <TableCell className="text-center pr-4">
+                        <TableCell className="sticky right-0  text-right pr-4">
                           <div className="flex justify-center items-center gap-1">
                             <Button
                               variant="ghost"

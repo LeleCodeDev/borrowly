@@ -59,14 +59,15 @@ import {
 } from "../../components/ui/table";
 import { Textarea } from "../../components/ui/textarea";
 import {
+  useCancelBorrow,
   useConfirmBorrow,
   useMyBorrowCard,
   useMyBorrows,
   useReturnBorrow,
 } from "../../hooks/api/useBorrow";
+import { formatDate } from "../../lib/formatDate";
 import type { ApiError } from "../../types/apiResponse";
 import type { Borrow, BorrowStatus } from "../../types/borrow";
-import { formatDate } from "../../lib/formatDate";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -80,7 +81,7 @@ const BorrowerBorrowPage = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [actionTarget, setActionTarget] = useState<{
     id: number;
-    type: "confirm" | "return";
+    type: "confirm" | "return" | "cancel";
   } | null>(null);
   const [borrowerNote, setBorrowerNote] = useState("");
 
@@ -98,6 +99,7 @@ const BorrowerBorrowPage = () => {
     useMyBorrowCard();
   const confirmBorrow = useConfirmBorrow();
   const returnBorrow = useReturnBorrow();
+  const cancelBorrow = useCancelBorrow();
 
   const borrows = data?.data;
   const totalPages = data?.pagination?.totalPages ?? 1;
@@ -126,7 +128,7 @@ const BorrowerBorrowPage = () => {
           );
         },
       });
-    } else {
+    } else if (actionTarget.type === "return") {
       returnBorrow.mutate(
         { id: actionTarget.id, data: { borrowerNote: borrowerNote } },
         {
@@ -143,6 +145,21 @@ const BorrowerBorrowPage = () => {
           },
         },
       );
+    } else {
+      cancelBorrow.mutate(actionTarget.id, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          setActionTarget(null);
+        },
+
+        onError: (err) => {
+          const error = err as AxiosError<ApiError<null>>;
+          toast.error(
+            error.response?.data.message ||
+              `Failed to ${actionTarget.type} borrow`,
+          );
+        },
+      });
     }
   };
 
@@ -369,25 +386,25 @@ const BorrowerBorrowPage = () => {
 
           <CardContent className="p-0">
             <div className="overflow-x-auto w-full">
-              <Table className="table-fixed w-full min-w-150">
+              <Table className="w-full min-w-max">
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="w-14 pl-6 font-semibold text-foreground">
+                    <TableHead className=" pl-6 font-semibold text-foreground">
                       No
                     </TableHead>
                     <TableHead className="font-semibold text-foreground">
                       Item
                     </TableHead>
-                    <TableHead className="w-32 font-semibold text-foreground">
+                    <TableHead className=" font-semibold text-foreground">
                       Borrow Date
                     </TableHead>
-                    <TableHead className="w-32 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Return Date
                     </TableHead>
-                    <TableHead className="w-28 font-semibold text-foreground">
+                    <TableHead className="font-semibold text-foreground">
                       Status
                     </TableHead>
-                    <TableHead className="w-14 pr-6" />
+                    <TableHead className="sticky right-0  pr-6" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -439,7 +456,7 @@ const BorrowerBorrowPage = () => {
                                 <img
                                   src={BaseURL + "/" + borrow.item.image}
                                   alt={borrow.item.name}
-                                  className="h-full w-full object-cover"
+                                  className="h-full w-full object-contain"
                                 />
                               ) : (
                                 <div className="h-full w-full flex items-center justify-center">
@@ -466,7 +483,7 @@ const BorrowerBorrowPage = () => {
                         <TableCell>
                           <BorrowStatusBadge status={borrow.status} />
                         </TableCell>
-                        <TableCell className="text-right pr-4">
+                        <TableCell className="sticky right-0  text-right pr-4">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -566,13 +583,13 @@ const BorrowerBorrowPage = () => {
         </Card>
       </main>
 
-      {/* Detail Dialog */}
       <BorrowerBorrowDetail
         isOpen={isDetailOpen}
         selectedBorrow={selectedBorrow}
         onOpenChange={setIsDetailOpen}
         onConfirmBorrow={(id) => setActionTarget({ id, type: "confirm" })}
         onReturnBorrow={(id) => setActionTarget({ id, type: "return" })}
+        onCancelBorrow={(id) => setActionTarget({ id, type: "cancel" })}
         onClose={() => setIsDetailOpen(false)}
       />
 
@@ -587,13 +604,17 @@ const BorrowerBorrowPage = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {actionTarget?.type === "confirm"
-                ? "Confirm Item Pickup?"
-                : "Return Item?"}
+                ? "Confirm Item Pickup ?"
+                : actionTarget?.type === "return"
+                  ? "Return Item ?"
+                  : "Cancel Borrow"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {actionTarget?.type === "confirm"
                 ? "This confirms you have picked up the item. Make sure you have it in hand before confirming."
-                : "This confirms you are returning the item. The officer will verify the return."}
+                : actionTarget?.type == "return"
+                  ? "This confirms you are returning the item."
+                  : "This confirms you are canceling to borrow the item."}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -625,7 +646,11 @@ const BorrowerBorrowPage = () => {
             <Button
               onClick={handleAction}
               disabled={isActionPending}
-              className="hover:cursor-pointer"
+              className={
+                actionTarget?.type === "cancel"
+                  ? "hover:cursor-pointer text-white hover:text-gray-100   bg-red-600 hover:bg-red-700 transition-colors duration-200 flex items-center text-base"
+                  : "hover:cursor-pointer"
+              }
             >
               {isActionPending ? (
                 <span className="flex items-center gap-2">
@@ -634,8 +659,10 @@ const BorrowerBorrowPage = () => {
                 </span>
               ) : actionTarget?.type === "confirm" ? (
                 "Confirm Pickup"
-              ) : (
+              ) : actionTarget?.type === "return" ? (
                 "Return Item"
+              ) : (
+                "Cancel Borrow"
               )}
             </Button>
           </AlertDialogFooter>

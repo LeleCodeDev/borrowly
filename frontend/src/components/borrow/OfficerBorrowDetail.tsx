@@ -30,12 +30,12 @@ const OfficerBorrowDetail: React.FC<OfficerBorrowDetailProps> = ({
       <DialogContent className="sm:max-w-4xl p-0 overflow-hidden gap-0">
         {selectedBorrow && (
           <>
-            <div className="relative h-64 w-full overflow-hidden bg-muted shrink-0">
+            <div className="relative h-75 w-full overflow-hidden bg-muted shrink-0">
               {selectedBorrow.item?.image ? (
                 <img
                   src={BaseURL + "/" + selectedBorrow.item.image}
                   alt={selectedBorrow.item.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
@@ -189,7 +189,7 @@ const OfficerBorrowDetail: React.FC<OfficerBorrowDetailProps> = ({
                       </p>
                       <div className="p-2.5 rounded-lg border bg-muted/20 space-y-0.5">
                         <p className="text-sm font-semibold leading-tight">
-                          {selectedBorrow.reviewedUser.username}
+                          {selectedBorrow.reviewedUser.username ?? "N/A"}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {selectedBorrow.reviewedUser.email}

@@ -244,25 +244,25 @@ const BorrowerReturnPage = () => {
           </CardHeader>
 
           <CardContent className="p-0">
-            <Table className="table-fixed w-full">
+            <Table className=" w-full min-w-max">
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="w-14 pl-6 font-semibold text-foreground">
+                  <TableHead className="pl-6 font-semibold text-foreground">
                     No
                   </TableHead>
                   <TableHead className="font-semibold text-foreground">
                     Item
                   </TableHead>
-                  <TableHead className="w-28 font-semibold text-foreground">
+                  <TableHead className=" font-semibold text-foreground">
                     Due Date
                   </TableHead>
-                  <TableHead className="w-28 font-semibold text-foreground">
+                  <TableHead className=" font-semibold text-foreground">
                     Returned
                   </TableHead>
-                  <TableHead className="w-24 font-semibold text-foreground">
-                    Fine
+                  <TableHead className=" font-semibold text-foreground">
+                    Status
                   </TableHead>
-                  <TableHead className="w-14 pr-6"></TableHead>
+                  <TableHead className="sticky right-0 pr-6"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -314,7 +314,7 @@ const BorrowerReturnPage = () => {
                               <img
                                 src={BaseURL + "/" + ret.borrow.item.image}
                                 alt={ret.borrow.item.name}
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-contain"
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center">
@@ -346,21 +346,21 @@ const BorrowerReturnPage = () => {
                         {formatDate(ret.returnDate)}
                       </TableCell>
                       <TableCell>
-                        {ret.fine > 0 ? (
+                        {ret.borrow?.isOverdue ? (
                           <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800">
-                            Rp {ret.fine.toLocaleString()}
+                            Returned Late
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-green-50 text-green-700 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-800">
-                            No fine
+                            On Time
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="text-right pr-4">
+                      <TableCell className="sticky right-0  text-right pr-4">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 hover:cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-8 w-8 hover:cursor-pointer  transition-opacity"
                           onClick={() => {
                             setSelectedReturn(ret);
                             setIsDetailOpen(true);
@@ -465,7 +465,7 @@ const BorrowerReturnPage = () => {
                   <img
                     src={BaseURL + "/" + selectedReturn.borrow.item.image}
                     alt={selectedReturn.borrow.item.name}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
@@ -482,15 +482,6 @@ const BorrowerReturnPage = () => {
                       {selectedReturn.borrow?.item?.category?.name}
                     </p>
                   </div>
-                  {selectedReturn.fine > 0 ? (
-                    <span className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ring-1 ring-inset bg-red-500/90 text-white ring-red-400 backdrop-blur-sm">
-                      Fine: Rp {selectedReturn.fine.toLocaleString()}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ring-1 ring-inset bg-green-500/90 text-white ring-green-400 backdrop-blur-sm">
-                      No Fine
-                    </span>
-                  )}
                 </div>
               </div>
 
@@ -611,7 +602,7 @@ const BorrowerReturnPage = () => {
                             : "Approved by"}
                         </p>
                         <p className="text-sm font-semibold leading-tight">
-                          {selectedReturn.borrow.reviewedUser.username}
+                          {selectedReturn.borrow.reviewedUser.username ?? "N/A"}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {selectedReturn.borrow.reviewedUser.email}
@@ -670,19 +661,6 @@ const BorrowerReturnPage = () => {
                         </span>
                       )}
                     </div>
-
-                    <div className="space-y-0.5">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                        Fine
-                      </p>
-                      <p
-                        className={`text-sm font-bold ${selectedReturn.fine > 0 ? "text-red-500" : "text-green-600"}`}
-                      >
-                        {selectedReturn.fine > 0
-                          ? `Rp ${selectedReturn.fine.toLocaleString()}`
-                          : "No fine"}
-                      </p>
-                    </div>
                   </div>
 
                   {selectedReturn.borrowerNote && (
@@ -692,17 +670,6 @@ const BorrowerReturnPage = () => {
                       </p>
                       <p className="text-sm bg-muted/50 rounded-lg px-3 py-2.5 leading-relaxed">
                         {selectedReturn.borrowerNote}
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedReturn.borrow?.officerNote && (
-                    <div className="space-y-1.5">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
-                        Officer Note
-                      </p>
-                      <p className="text-sm bg-muted/50 rounded-lg px-3 py-2.5 leading-relaxed">
-                        {selectedReturn.borrow.officerNote}
                       </p>
                     </div>
                   )}
