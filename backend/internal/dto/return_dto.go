@@ -16,13 +16,13 @@ type (
 	}
 
 	ReturnResponse struct {
-		ID           uint            `json:"id"`
-		Borrow       *BorrowResponse `json:"borrow"`
-		ReturnDate   time.Time       `json:"returnDate"`
-		BorrowerNote *string         `json:"borrowerNote"`
-		Fine         *float64        `json:"fine"`
-		CreatedAt    time.Time       `json:"createdAt"`
-		UpdatedAt    time.Time       `json:"updatedAt"`
+		ID               uint            `json:"id"`
+		Borrow           *BorrowResponse `json:"borrow"`
+		ActualReturnDate time.Time       `json:"actualReturnDate"`
+		BorrowerNote     *string         `json:"borrowerNote"`
+		IsOverdue        bool            `json:"isOverdue"`
+		CreatedAt        time.Time       `json:"createdAt"`
+		UpdatedAt        time.Time       `json:"updatedAt"`
 	}
 
 	ReturnRequest struct {
@@ -30,12 +30,12 @@ type (
 	}
 
 	ReturnCreateForUserRequest struct {
-		BorrowID   uint            `json:"borrowId" form:"borrowId" binding:"required,gt=0"`
-		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
+		BorrowID         uint            `json:"borrowId" form:"borrowId" binding:"required,gt=0"`
+		ActualReturnDate *types.DateOnly `json:"actualReturnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
 	}
 
 	ReturnUpdateForUserRequest struct {
-		ReturnDate *types.DateOnly `json:"returnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
+		ActualReturnDate *types.DateOnly `json:"actualReturnDate" form:"returnDate" binding:"required" time_format:"2006-01-02"`
 	}
 
 	ReturnCardResponse struct {

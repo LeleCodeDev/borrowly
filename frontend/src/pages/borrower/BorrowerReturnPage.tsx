@@ -166,7 +166,7 @@ const BorrowerReturnPage = () => {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
+                <PopoverContent className="min-w-88" align="end">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-sm">Filters</p>
@@ -334,19 +334,19 @@ const BorrowerReturnPage = () => {
                       </TableCell>
                       <TableCell>
                         <p
-                          className={`text-sm ${ret.borrow?.isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}
+                          className={`text-sm ${ret.isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}
                         >
                           {formatDate(ret.borrow?.returnDate)}
                         </p>
-                        {ret.borrow?.isOverdue && (
+                        {ret.isOverdue && (
                           <p className="text-[10px] text-red-400">Overdue</p>
                         )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(ret.returnDate)}
+                        {formatDate(ret.actualReturnDate)}
                       </TableCell>
                       <TableCell>
-                        {ret.borrow?.isOverdue ? (
+                        {ret.isOverdue ? (
                           <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800">
                             Returned Late
                           </span>
@@ -643,7 +643,7 @@ const BorrowerReturnPage = () => {
                         Return Date
                       </p>
                       <p className="text-sm font-semibold">
-                        {formatDate(selectedReturn.returnDate, true)}
+                        {formatDate(selectedReturn.actualReturnDate, true)}
                       </p>
                     </div>
 
@@ -651,7 +651,7 @@ const BorrowerReturnPage = () => {
                       <p className="text-xs text-muted-foreground uppercase tracking-wide">
                         Status
                       </p>
-                      {selectedReturn.borrow?.isOverdue ? (
+                      {selectedReturn.isOverdue ? (
                         <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800">
                           Returned Late
                         </span>

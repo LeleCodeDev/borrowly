@@ -56,13 +56,15 @@ const UpdateReturnModal: React.FC<UpdateReturnModalProps> = ({
               <Input
                 id="return_date"
                 type="date"
-                value={formData.returnDate ?? ""}
-                className={`${fieldErrors?.returnDate && "border-red-600 border-3"}`}
-                onChange={(e) => onChange("returnDate", e.target.value)}
+                value={formData.actualReturnDate ?? ""}
+                className={`${fieldErrors?.actualReturnDate && "border-red-600 border-3"}`}
+                onChange={(e) => onChange("actualReturnDate", e.target.value)}
               />
 
-              {fieldErrors?.returnDate && (
-                <p className="text-sm text-red-600">{fieldErrors.returnDate}</p>
+              {fieldErrors?.actualReturnDate && (
+                <p className="text-sm text-red-600">
+                  {fieldErrors.actualReturnDate}
+                </p>
               )}
             </div>
           </div>

@@ -38,9 +38,9 @@ const (
 )
 
 type LogActivity struct {
-	ID        uint         `json:"id" gorm:"primaryKey"`
-	UserID    *uint        `json:"userId" gorm:"index"`
-	User      *User        `json:"user" gorm:"constraint:OnDelete:SET NULL"`
+	ID        uint         `gorm:"primaryKey"`
+	UserID    *uint        `gorm:"index"`
+	User      *User        `gorm:"constraint:OnDelete:SET NULL"`
 	Activity  ActivityType `gorm:"not null"`
-	CreatedAt time.Time    `json:"createdAt"`
+	CreatedAt time.Time
 }

@@ -101,7 +101,7 @@ const AdminBorrowRequestPage = () => {
     useState<ReturnError | null>(null);
   const [returnForm, setReturnForm] = useState<ReturnCreateForUserRequest>({
     borrowId: 0,
-    returnDate: null,
+    actualreturnDate: null,
   });
   const [borrowForm, setBorrowForm] = useState<BorrowForUserRequest>({
     userId: 0,

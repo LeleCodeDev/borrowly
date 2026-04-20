@@ -8,10 +8,10 @@ import (
 )
 
 type Category struct {
-	ID          uint           `json:"id" gorm:"primaryKey"`
-	Name        string         `json:"name" gorm:"type:varchar(255);not null;uniqueIndex:idx_name_deleted_at;index"`
-	Description string         `json:"description" gorm:"type:text"`
-	CreatedAt   time.Time      `json:"createdAt"`
-	UpdatedAt   time.Time      `json:"updatedAt"`
-	DeletedAt   gorm.DeletedAt `json:"deletedAt" gorm:"index;uniqueIndex:idx_name_deleted_at"`
+	ID          uint   `gorm:"primaryKey"`
+	Name        string `gorm:"type:varchar(255);not null;uniqueIndex:idx_name_deleted_at;index"`
+	Description string `gorm:"type:text"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt `gorm:"index;uniqueIndex:idx_name_deleted_at"`
 }

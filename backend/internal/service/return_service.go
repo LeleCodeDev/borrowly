@@ -181,17 +181,7 @@ func (s *ReturnService) UpdateForUser(ctx context.Context, id int, currentUser m
 			return err
 		}
 
-		var fine *float64
-		if req.ReturnDate.After(returnBorrow.Borrow.ReturnDate) {
-			diff := req.ReturnDate.Sub(returnBorrow.Borrow.ReturnDate)
-			diffOfDays := int(diff / (24 * time.Hour))
-			fineAmount := float64(2000 * diffOfDays)
-			fine = &fineAmount
-		}
-
-		returnBorrow.ReturnDate = req.ReturnDate.Time
-		returnBorrow.Fine = fine
-
+		returnBorrow.ActualReturnDate = req.ActualReturnDate.Time
 		if err := txReturnRepo.Update(ctx, returnBorrow); err != nil {
 			return err
 		}

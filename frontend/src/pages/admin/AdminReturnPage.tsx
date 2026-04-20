@@ -83,7 +83,7 @@ const AdminReturnPage = () => {
   const [updateReturnId, setUpdateReturnId] = useState<number | null>(null);
   const [fieldErrors, setFieldErrors] = useState<ReturnError | null>(null);
   const [returnForm, setReturnForm] = useState<ReturnUpdateForUserRequest>({
-    returnDate: null,
+    actualReturnDate: null,
   });
 
   const hasActiveFilters = !!startDate || !!endDate;
@@ -120,7 +120,7 @@ const AdminReturnPage = () => {
     setFieldErrors(null);
     setUpdateReturnId(ret.id);
     setReturnForm({
-      returnDate: formatDateValue(ret.returnDate),
+      actualReturnDate: formatDateValue(ret.actualReturnDate),
     });
     setIsUpdateModalOpen(true);
   };
@@ -432,19 +432,19 @@ const AdminReturnPage = () => {
                       </TableCell>
                       <TableCell>
                         <p
-                          className={`text-sm ${ret.borrow?.isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}
+                          className={`text-sm ${ret.isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}
                         >
                           {formatDate(ret.borrow?.returnDate)}
                         </p>
-                        {ret.borrow?.isOverdue && (
+                        {ret.isOverdue && (
                           <p className="text-[10px] text-red-400">Overdue</p>
                         )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(ret.returnDate)}
+                        {formatDate(ret.actualReturnDate)}
                       </TableCell>
                       <TableCell>
-                        {ret.borrow?.isOverdue ? (
+                        {ret.isOverdue ? (
                           <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800">
                             Returned Late
                           </span>
@@ -666,7 +666,7 @@ const AdminReturnPage = () => {
                         Due
                       </p>
                       <p
-                        className={`text-xs font-semibold leading-tight ${selectedReturn.borrow?.isOverdue ? "text-red-500" : ""}`}
+                        className={`text-xs font-semibold leading-tight ${selectedReturn.isOverdue ? "text-red-500" : ""}`}
                       >
                         {formatDate(selectedReturn.borrow?.returnDate, true)}
                       </p>
@@ -676,7 +676,7 @@ const AdminReturnPage = () => {
                         Returned
                       </p>
                       <p className="text-xs font-semibold leading-tight">
-                        {formatDate(selectedReturn.returnDate, true)}
+                        {formatDate(selectedReturn.actualReturnDate, true)}
                       </p>
                     </div>
                   </div>
@@ -723,7 +723,7 @@ const AdminReturnPage = () => {
                         Return Date
                       </p>
                       <p className="text-sm font-semibold">
-                        {formatDate(selectedReturn.returnDate, true)}
+                        {formatDate(selectedReturn.actualReturnDate, true)}
                       </p>
                     </div>
 
@@ -731,7 +731,7 @@ const AdminReturnPage = () => {
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
                         Status
                       </p>
-                      {selectedReturn.borrow?.isOverdue ? (
+                      {selectedReturn.isOverdue ? (
                         <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800">
                           Returned Late
                         </span>

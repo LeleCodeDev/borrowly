@@ -2,8 +2,6 @@
 package mapper
 
 import (
-	"time"
-
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 )
@@ -39,7 +37,6 @@ func ToBorrowResponse(borrow *model.Borrow) dto.BorrowResponse {
 		ReturnDate:   borrow.ReturnDate,
 		Status:       borrow.Status,
 		ReviewAt:     borrow.ReviewAt,
-		IsOverdue:    borrow.Status == model.BorrowStatusBorrowed && time.Now().After(borrow.ReturnDate),
 		CreatedAt:    borrow.CreatedAt,
 		UpdatedAt:    borrow.UpdatedAt,
 	}

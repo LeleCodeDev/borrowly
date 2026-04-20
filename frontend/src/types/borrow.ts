@@ -22,7 +22,6 @@ export interface Borrow {
   returnDate: string;
   status: BorrowStatus;
   reviewAt: string | null;
-  isOverdue: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -49,11 +49,11 @@ func (r *ReturnRepository) GetAll(ctx context.Context, req dto.ReturnQuery) ([]m
 		Model(&model.Return{})
 
 	if !req.StartDate.IsZero() {
-		db = db.Where("return_date >= ?", req.StartDate)
+		db = db.Where("actual_return_date >= ?", req.StartDate)
 	}
 
 	if !req.EndDate.IsZero() {
-		db = db.Where("return_date <= ?", req.EndDate)
+		db = db.Where("actual_return_date <= ?", req.EndDate)
 	}
 
 	if err := db.Count(&total).Error; err != nil {
@@ -87,11 +87,11 @@ func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 	db = db.Where("borrows.user_id = ?", userID)
 
 	if !req.StartDate.IsZero() {
-		db = db.Where("return_date >= ?", req.StartDate)
+		db = db.Where("actual_return_date >= ?", req.StartDate)
 	}
 
 	if !req.EndDate.IsZero() {
-		db = db.Where("return_date <= ?", req.EndDate)
+		db = db.Where("actual_return_date <= ?", req.EndDate)
 	}
 
 	if err := db.Count(&total).Error; err != nil {
@@ -156,7 +156,7 @@ func (r *ReturnRepository) CountAllIsOverdue(ctx context.Context) (int64, error)
 	if err := r.db.WithContext(ctx).
 		Model(&model.Return{}).
 		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
-		Where("returns.return_date > borrows.return_date").
+		Where("returns.actual_return_date > borrows.return_date").
 		Count(&count).Error; err != nil {
 		return 0, err
 	}
@@ -169,7 +169,7 @@ func (r *ReturnRepository) CountAllIsOverdueByUserID(ctx context.Context, userID
 		Model(&model.Return{}).
 		Joins("JOIN borrows ON borrows.id = returns.borrow_id").
 		Where("borrows.user_id = ?", userID).
-		Where("returns.return_date > borrows.return_date").
+		Where("returns.actual_return_date > borrows.return_date").
 		Count(&count).Error; err != nil {
 		return 0, err
 	}

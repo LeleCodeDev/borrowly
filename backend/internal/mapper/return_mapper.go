@@ -16,13 +16,13 @@ func ToReturnResponse(returnBorrow *model.Return) dto.ReturnResponse {
 	}
 
 	return dto.ReturnResponse{
-		ID:           returnBorrow.ID,
-		Borrow:       borrow,
-		ReturnDate:   returnBorrow.ReturnDate,
-		BorrowerNote: returnBorrow.BorrowerNote,
-		Fine:         returnBorrow.Fine,
-		CreatedAt:    returnBorrow.CreatedAt,
-		UpdatedAt:    returnBorrow.UpdatedAt,
+		ID:               returnBorrow.ID,
+		Borrow:           borrow,
+		ActualReturnDate: returnBorrow.ActualReturnDate,
+		BorrowerNote:     returnBorrow.BorrowerNote,
+		IsOverdue:        returnBorrow.ActualReturnDate.After(borrow.ReturnDate),
+		CreatedAt:        returnBorrow.CreatedAt,
+		UpdatedAt:        returnBorrow.UpdatedAt,
 	}
 }
 
@@ -33,11 +33,10 @@ func ToReturnModel(
 	fine *float64,
 ) *model.Return {
 	return &model.Return{
-		BorrowID:     borrow.ID,
-		Borrow:       *borrow,
-		ReturnDate:   returnDate,
-		BorrowerNote: req.BorrowerNote,
-		Fine:         fine,
+		BorrowID:         borrow.ID,
+		Borrow:           *borrow,
+		ActualReturnDate: returnDate,
+		BorrowerNote:     req.BorrowerNote,
 	}
 }
 
@@ -48,9 +47,8 @@ func ToReturnModelForUser(
 	fine *float64,
 ) *model.Return {
 	return &model.Return{
-		BorrowID:   borrow.ID,
-		Borrow:     *borrow,
-		ReturnDate: returnDate,
-		Fine:       fine,
+		BorrowID:         borrow.ID,
+		Borrow:           *borrow,
+		ActualReturnDate: returnDate,
 	}
 }

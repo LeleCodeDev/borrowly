@@ -274,7 +274,7 @@ const BorrowerBorrowPage = () => {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
+                <PopoverContent className="min-w-88" align="end">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-sm">Filters</p>

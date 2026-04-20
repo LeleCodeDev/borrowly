@@ -4,8 +4,9 @@ import type { Borrow } from "./borrow";
 export interface Return {
   id: number;
   borrow: Borrow;
-  returnDate: string;
+  actualReturnDate: string;
   borrowerNote: string | null;
+  isOverdue: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,14 +27,14 @@ export interface ReturnCard {
 
 export interface ReturnCreateForUserRequest {
   borrowId: number;
-  returnDate: string | null;
+  actualreturnDate: string | null;
 }
 
 export interface ReturnUpdateForUserRequest {
-  returnDate: string | null;
+  actualReturnDate: string | null;
 }
 
 export interface ReturnError {
   borrowId: number;
-  returnDate: string;
+  actualReturnDate: string;
 }

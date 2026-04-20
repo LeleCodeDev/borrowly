@@ -29,7 +29,6 @@ type (
 		ReturnDate   time.Time          `json:"returnDate"`
 		Status       model.BorrowStatus `json:"status"`
 		ReviewAt     *time.Time         `json:"reviewAt"`
-		IsOverdue    bool               `json:"isOverdue"`
 		CreatedAt    time.Time          `json:"createdAt"`
 		UpdatedAt    time.Time          `json:"updatedAt"`
 	}
