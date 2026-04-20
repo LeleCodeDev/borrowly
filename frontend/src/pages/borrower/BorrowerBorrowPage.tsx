@@ -5,6 +5,7 @@ import {
   Eye,
   Filter,
   Package,
+  RotateCcw,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -495,6 +496,54 @@ const BorrowerBorrowPage = () => {
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
+
+                          {borrow.status === "approved" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:cursor-pointer"
+                              onClick={() =>
+                                setActionTarget({
+                                  id: Number(borrow.id),
+                                  type: "confirm",
+                                })
+                              }
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+
+                          {borrow.status === "borrowed" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:cursor-pointer"
+                              onClick={() =>
+                                setActionTarget({
+                                  id: Number(borrow.id),
+                                  type: "return",
+                                })
+                              }
+                            >
+                              <RotateCcw className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+
+                          {borrow.status === "pending" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:cursor-pointer hover:bg-destructive/10 hover:text-destructive "
+                              onClick={() =>
+                                setActionTarget({
+                                  id: Number(borrow.id),
+                                  type: "cancel",
+                                })
+                              }
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))
