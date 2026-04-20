@@ -43,7 +43,7 @@ CREATE DATABASE borrowly
 
 ## Backend Setup (Go / Gin)
 
-### 1. Install wkhtmltopdf
+### 2. Install wkhtmltopdf
 
 Required by `go-wkhtmltopdf` for PDF report generation.
 
@@ -73,7 +73,7 @@ Verify the installation:
 wkhtmltopdf --version
 ```
 
-### 2. Clone and install dependencies
+### 3. Clone and install dependencies
 
 ```bash
 git clone https://github.com/your-username/borrowly.git
@@ -90,7 +90,7 @@ or manually :
 go get github.com/SebastiaanKlippert/go-wkhtmltopdf@v1.9.3 github.com/gin-contrib/cors@v1.7.6 github.com/gin-gonic/gin@v1.11.0 github.com/go-playground/validator/v10@v10.30.1 github.com/golang-jwt/jwt/v5@v5.3.1 github.com/google/uuid@v1.6.0 github.com/joho/godotenv@v1.5.1 golang.org/x/crypto@v0.48.0 gorm.io/driver/mysql@v1.6.0 gorm.io/gorm@v1.31.1
 ```
 
-### 3. Configure environment
+### 4. Configure environment
 
 Copy the example env file and fill in your values:
 
@@ -109,19 +109,19 @@ JWT_SECRET=your_jwt_secret
 PORT=8080
 ```
 
-### 4. Migrate the database
+### 5. Migrate the database
 
 ```bash
 go run cmd/migration/main.go
 ```
 
-### 5. Seed the database
+### 6. Seed the database
 
 ```bash
 go run cmd/seeder/main.go
 ```
 
-### 6. Run the backend
+### 7. Run the backend
 
 ```bash
 go run cmd/server/main.go
@@ -239,4 +239,3 @@ npm run build
 ```
 
 Serve the `dist/` folder with any static file server (e.g. Nginx, Caddy).
-
