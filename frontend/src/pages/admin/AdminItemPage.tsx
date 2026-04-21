@@ -1,6 +1,15 @@
 import { useDebounce } from "@uidotdev/usehooks";
 import type { AxiosError } from "axios";
-import { Check, Filter, Package, Pencil, Plus, Trash2, X } from "lucide-react";
+import {
+  Check,
+  Filter,
+  Package,
+  Pencil,
+  Plus,
+  Tag,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import DeleteModal from "../../components/DeleteModal";
@@ -54,6 +63,7 @@ import type {
   ItemRequest,
   ItemStatus,
 } from "../../types/item";
+import { Badge } from "../../components/ui/badge";
 
 const BaseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -412,61 +422,67 @@ const AdminItemPage = () => {
             <p className="text-sm text-muted-foreground">No items found</p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items?.map((item) => (
-              <Card
+              <div
                 key={item.id}
-                className="overflow-hidden group hover:shadow-md transition-shadow duration-200 p-0"
+                className="group bg-card border rounded-xl shadow-lg flex flex-col overflow-hidden hover:bg-muted/30 transition-colors duration-200"
               >
                 {/* Image */}
-                <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                <div className="relative p-2 aspect-video w-full overflow-hidden bg-muted">
                   {item.image ? (
                     <img
                       src={BaseURL + "/" + item.image}
                       alt={item.name}
-                      className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-contain group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                     />
                   ) : (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 bg-muted/50">
-                      <Package className="h-8 w-8 text-muted-foreground/30" />
-                      <span className="text-xs text-muted-foreground">
-                        No image
-                      </span>
+                    <div className="flex h-full w-full items-center justify-center bg-secondary">
+                      <Package className="h-8 w-8 text-muted-foreground/20" />
                     </div>
                   )}
-
-                  {/* Status badge overlay */}
-                  <span
-                    className={`absolute top-2 right-2 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
-                      item.status === "available"
-                        ? "bg-green-50 text-green-700 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-800"
-                        : "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-800"
-                    }`}
-                  >
-                    {item.status === "available" ? "Available" : "Unavailable"}
-                  </span>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 flex flex-col gap-3">
-                  <div>
-                    <h3 className="font-semibold text-base leading-tight">
-                      {item.name}
-                    </h3>
-                    <span className="text-xs text-muted-foreground mt-0.5 inline-block">
+                <div className="flex flex-col gap-3 p-4 flex-1">
+                  {/* Category + Status */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
+                      <Tag className="h-3 w-3" />
                       {item.category.name}
                     </span>
+
+                    <Badge
+                      variant="secondary"
+                      className={`text-[11px] font-medium px-2 py-0 h-5 rounded-full border-0 ${
+                        item.status === "available"
+                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
+                          : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                      }`}
+                    >
+                      {item.status === "available"
+                        ? "Available"
+                        : "Unavailable"}
+                    </Badge>
                   </div>
 
-                  <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
-                    {item.description || (
-                      <span className="italic text-muted-foreground/50">
-                        No description
-                      </span>
-                    )}
-                  </p>
+                  {/* Name + Description */}
+                  <div className="flex-1 space-y-1">
+                    <h3 className="font-semibold text-sm leading-snug tracking-tight">
+                      {item.name}
+                    </h3>
 
-                  <div className="flex items-center justify-between pt-1 border-t">
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-10">
+                      {item.description || (
+                        <span className="italic opacity-40">
+                          No description
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Qty */}
+                  <div className="flex items-center justify-between border-t pt-3">
                     <div className="flex items-center gap-1.5 bg-muted px-2.5 py-1 rounded-md">
                       <span className="text-xs text-muted-foreground">Qty</span>
                       <span className="text-sm font-semibold">
@@ -474,7 +490,8 @@ const AdminItemPage = () => {
                       </span>
                     </div>
 
-                    <div className="flex gap-1 transition-opacity">
+                    {/* Actions */}
+                    <div className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -483,6 +500,7 @@ const AdminItemPage = () => {
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
+
                       <Button
                         variant="ghost"
                         size="icon"
@@ -497,7 +515,7 @@ const AdminItemPage = () => {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
