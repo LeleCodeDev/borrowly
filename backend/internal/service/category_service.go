@@ -88,8 +88,7 @@ func (s *CategoryService) Create(ctx context.Context, currentUser model.User, re
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityCreateCategory)
-
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("CREATE CATEGORY %s WITH CATEGORY ID %d", category.Name, category.ID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -135,8 +134,7 @@ func (s *CategoryService) Update(ctx context.Context, id uint, currentUser model
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityUpdateCategory)
-
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("UPDATE CATEGORY %s WITH CATEGORY ID %d", category.Name, category.ID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -182,7 +180,7 @@ func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteCategory)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("DELETE CATEGORY %s WITH CATEGORY ID %d", category.Name, category.ID))
 		return txLogRepo.Create(ctx, log)
 	})
 }

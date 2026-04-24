@@ -153,7 +153,7 @@ func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req 
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityCreateBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("CREATE BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -210,7 +210,11 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityCreateBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("CREATE BORROW FOR USER ID %d WITH BORROW ID %d FOR ITEM ID %d",
+			borrow.UserID,
+			borrow.ID,
+			borrow.ItemID,
+		))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -274,7 +278,11 @@ func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityUpdateBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("UPDATE BORROW FOR USER ID %d WITH BORROW ID %d FOR ITEM ID %d",
+			borrow.UserID,
+			borrow.ID,
+			borrow.ItemID,
+		))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -323,7 +331,7 @@ func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id 
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityApproveBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("APPROVE BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -368,7 +376,7 @@ func (s *BorrowService) Reject(ctx context.Context, currentUser model.User, id u
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityRejectBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("REJECT BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -408,7 +416,7 @@ func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id u
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityCanceledBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("CANCEL BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -464,7 +472,7 @@ func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id 
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityBorrowedBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("CONFIRM BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -527,7 +535,7 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id u
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityReturnBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("RETURN BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		if err := txLogRepo.Create(ctx, log); err != nil {
 			return err
 		}
@@ -565,7 +573,7 @@ func (s *BorrowService) Delete(ctx context.Context, id uint, currentUser model.U
 			return err
 		}
 
-		log := mapper.ToLogActivityModel(currentUser, model.ActivityDeleteBorrow)
+		log := mapper.ToLogActivityModel(currentUser, fmt.Sprintf("DELETE BORROW WITH BORROW ID %d FOR ITEM ID %d", borrow.ID, borrow.ItemID))
 		return txLogRepo.Create(ctx, log)
 	})
 }

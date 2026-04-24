@@ -3,8 +3,6 @@ package dto
 
 import (
 	"time"
-
-	"github.com/lelecodedev/borrowly/internal/model"
 )
 
 type (
@@ -14,10 +12,10 @@ type (
 	}
 
 	LogResponse struct {
-		ID        uint               `json:"id"`
-		User      *UserResponse      `json:"user"`
-		Activity  model.ActivityType `json:"activity"`
-		CreatedAt time.Time          `json:"createdAt"`
+		ID        uint          `json:"id"`
+		User      *UserResponse `json:"user"`
+		Activity  string        `json:"activity"`
+		CreatedAt time.Time     `json:"createdAt"`
 	}
 )
 

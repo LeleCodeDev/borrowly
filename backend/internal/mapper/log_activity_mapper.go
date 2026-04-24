@@ -5,7 +5,7 @@ import (
 	"github.com/lelecodedev/borrowly/internal/model"
 )
 
-func ToLogActivityModel(user model.User, activity model.ActivityType) *model.LogActivity {
+func ToLogActivityModel(user model.User, activity string) *model.LogActivity {
 	return &model.LogActivity{
 		UserID:   &user.ID,
 		User:     &user,
