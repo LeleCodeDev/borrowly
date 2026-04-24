@@ -47,7 +47,7 @@ func (r *CategoryRepository) GetAll(ctx context.Context, req dto.CategoryQuery) 
 	return categories, total, nil
 }
 
-func (r *CategoryRepository) GetByID(ctx context.Context, id int) (*model.Category, error) {
+func (r *CategoryRepository) GetByID(ctx context.Context, id uint) (*model.Category, error) {
 	var category model.Category
 
 	if err := r.db.WithContext(ctx).First(&category, id).Error; err != nil {
@@ -63,7 +63,7 @@ func (r *CategoryRepository) GetByID(ctx context.Context, id int) (*model.Catego
 
 func (r *CategoryRepository) ExistByName(ctx context.Context, name string) (bool, error) {
 	var count int64
-	err := r.db.WithContext(ctx).Model(&model.Category{}).Where("name = ?", name).Count(&count).Error
+	err := r.db.WithContext(ctx).Model(&model.Category{}).Where("name COLLATE utf8mb4_bin = ?", name).Count(&count).Error
 	return count > 0, err
 }
 

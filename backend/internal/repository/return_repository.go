@@ -109,7 +109,7 @@ func (r *ReturnRepository) GetAllByUserID(ctx context.Context, userID uint, req 
 	return returns, total, nil
 }
 
-func (r *ReturnRepository) GetByID(ctx context.Context, id int) (*model.Return, error) {
+func (r *ReturnRepository) GetByID(ctx context.Context, id uint) (*model.Return, error) {
 	var returnBorrow model.Return
 
 	if err := r.db.WithContext(ctx).

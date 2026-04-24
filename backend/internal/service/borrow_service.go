@@ -136,7 +136,7 @@ func (s *BorrowService) Create(ctx context.Context, currentUser model.User, req 
 		txItemRepo := s.itemRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
-		item, err := txItemRepo.GetByID(ctx, int(req.ItemID))
+		item, err := txItemRepo.GetByID(ctx, req.ItemID)
 		if err != nil {
 			return err
 		}
@@ -185,7 +185,7 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 		txUserRepo := s.userRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
-		user, err := txUserRepo.GetByID(ctx, int(req.UserID))
+		user, err := txUserRepo.GetByID(ctx, req.UserID)
 		if user == nil {
 			return errors.NotFound(fmt.Sprintf("User not found with ID: %d", req.UserID))
 		}
@@ -193,7 +193,7 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 			return err
 		}
 
-		item, err := txItemRepo.GetByID(ctx, int(req.ItemID))
+		item, err := txItemRepo.GetByID(ctx, req.ItemID)
 		if item == nil {
 			return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", req.ItemID))
 		}
@@ -225,7 +225,7 @@ func (s *BorrowService) CreateForUser(ctx context.Context, currentUser model.Use
 	return mapper.ToBorrowResponse(createdBorrow), nil
 }
 
-func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest, id int, currentUser model.User) (dto.BorrowResponse, error) {
+func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest, id uint, currentUser model.User) (dto.BorrowResponse, error) {
 	var updatedBorrow *model.Borrow
 
 	now := time.Now().Truncate(24 * time.Hour)
@@ -256,7 +256,7 @@ func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest
 		item := &borrow.Item
 		if borrow.ItemID != req.ItemID {
 			var err error
-			item, err := txItemRepo.GetByID(ctx, int(req.ItemID))
+			item, err := txItemRepo.GetByID(ctx, req.ItemID)
 			if item == nil {
 				return errors.NotFound(fmt.Sprintf("Item not found with ID: %d", req.ItemID))
 			}
@@ -289,7 +289,7 @@ func (s *BorrowService) UpdateForUser(ctx context.Context, req dto.BorrowRequest
 	return mapper.ToBorrowResponse(updatedBorrow), nil
 }
 
-func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id int, req dto.BorrowApprovalRequest) (dto.BorrowResponse, error) {
+func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id uint, req dto.BorrowApprovalRequest) (dto.BorrowResponse, error) {
 	var approvedBorrow *model.Borrow
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -338,7 +338,7 @@ func (s *BorrowService) Approve(ctx context.Context, currentUser model.User, id 
 	return mapper.ToBorrowResponse(approvedBorrow), nil
 }
 
-func (s *BorrowService) Reject(ctx context.Context, currentUser model.User, id int, req dto.BorrowApprovalRequest) (dto.BorrowResponse, error) {
+func (s *BorrowService) Reject(ctx context.Context, currentUser model.User, id uint, req dto.BorrowApprovalRequest) (dto.BorrowResponse, error) {
 	var rejectedBorrow *model.Borrow
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -383,7 +383,7 @@ func (s *BorrowService) Reject(ctx context.Context, currentUser model.User, id i
 	return mapper.ToBorrowResponse(rejectedBorrow), nil
 }
 
-func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id int) (dto.BorrowResponse, error) {
+func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id uint) (dto.BorrowResponse, error) {
 	var canceledBorrow *model.Borrow
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -423,7 +423,7 @@ func (s *BorrowService) Cancel(ctx context.Context, currentUser model.User, id i
 	return mapper.ToBorrowResponse(canceledBorrow), nil
 }
 
-func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id int) (dto.BorrowResponse, error) {
+func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id uint) (dto.BorrowResponse, error) {
 	var borrowedBorrow *model.Borrow
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -479,7 +479,7 @@ func (s *BorrowService) Confirm(ctx context.Context, currentUser model.User, id 
 	return mapper.ToBorrowResponse(borrowedBorrow), nil
 }
 
-func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id int, req dto.ReturnRequest) (dto.BorrowResponse, error) {
+func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id uint, req dto.ReturnRequest) (dto.BorrowResponse, error) {
 	var returnedBorrow *model.Borrow
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -542,7 +542,7 @@ func (s *BorrowService) Return(ctx context.Context, currentUser model.User, id i
 	return mapper.ToBorrowResponse(returnedBorrow), nil
 }
 
-func (s *BorrowService) Delete(ctx context.Context, id int, currentUser model.User) error {
+func (s *BorrowService) Delete(ctx context.Context, id uint, currentUser model.User) error {
 	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txBorrowRepo := s.repo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)

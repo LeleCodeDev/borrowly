@@ -52,7 +52,7 @@ func (s *CategoryService) GetAll(ctx context.Context, req dto.CategoryQuery) ([]
 	return responses, total, nil
 }
 
-func (s *CategoryService) GetByID(ctx context.Context, id int) (dto.CategoryResponse, error) {
+func (s *CategoryService) GetByID(ctx context.Context, id uint) (dto.CategoryResponse, error) {
 	category, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return dto.CategoryResponse{}, err
@@ -104,7 +104,7 @@ func (s *CategoryService) Create(ctx context.Context, currentUser model.User, re
 	return mapper.ToCategoryResponse(createdCategory), nil
 }
 
-func (s *CategoryService) Update(ctx context.Context, id int, currentUser model.User, req dto.CategoryRequest) (dto.CategoryResponse, error) {
+func (s *CategoryService) Update(ctx context.Context, id uint, currentUser model.User, req dto.CategoryRequest) (dto.CategoryResponse, error) {
 	var Updatedcategory *model.Category
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -151,7 +151,7 @@ func (s *CategoryService) Update(ctx context.Context, id int, currentUser model.
 	return mapper.ToCategoryResponse(Updatedcategory), nil
 }
 
-func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id int) error {
+func (s *CategoryService) Delete(ctx context.Context, currentUser model.User, id uint) error {
 	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txCategoryRepo := s.repo.WithTx(tx)
 		txItemRepo := s.itemRepo.WithTx(tx)

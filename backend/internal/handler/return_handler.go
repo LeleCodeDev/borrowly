@@ -3,12 +3,12 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
+	"github.com/lelecodedev/borrowly/internal/util"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -112,9 +112,9 @@ func (h *ReturnHandler) CreateReturnForUser(c *gin.Context) {
 }
 
 func (h *ReturnHandler) UpdateReturnForUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -138,9 +138,9 @@ func (h *ReturnHandler) UpdateReturnForUser(c *gin.Context) {
 }
 
 func (h *ReturnHandler) DeleteReturn(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 

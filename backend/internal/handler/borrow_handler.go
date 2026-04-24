@@ -4,12 +4,12 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
+	"github.com/lelecodedev/borrowly/internal/util"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -133,9 +133,9 @@ func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
 }
 
 func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -158,9 +158,9 @@ func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
 }
 
 func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -183,9 +183,9 @@ func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
 }
 
 func (h *BorrowHandler) RejectBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -208,10 +208,9 @@ func (h *BorrowHandler) RejectBorrow(c *gin.Context) {
 }
 
 func (h *BorrowHandler) CancelBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -228,9 +227,9 @@ func (h *BorrowHandler) CancelBorrow(c *gin.Context) {
 }
 
 func (h *BorrowHandler) ConfirmBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -247,9 +246,9 @@ func (h *BorrowHandler) ConfirmBorrow(c *gin.Context) {
 }
 
 func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -272,9 +271,9 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 }
 
 func (h *BorrowHandler) DeleteBorrow(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := util.GetParamID(c)
 	if err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid ID", nil)
+		response.HandleServiceError(c, err)
 		return
 	}
 

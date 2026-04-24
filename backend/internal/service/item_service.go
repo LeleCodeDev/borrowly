@@ -52,7 +52,7 @@ func (s *ItemService) GetAll(ctx context.Context, req dto.ItemQuery) ([]dto.Item
 	return responses, total, nil
 }
 
-func (s *ItemService) GetByID(ctx context.Context, id int) (dto.ItemResponse, error) {
+func (s *ItemService) GetByID(ctx context.Context, id uint) (dto.ItemResponse, error) {
 	item, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return dto.ItemResponse{}, err
@@ -95,7 +95,7 @@ func (s *ItemService) Create(ctx context.Context, currentUser model.User, req dt
 			return errors.AlreadyExist("Item name already exist")
 		}
 
-		category, err := txCategoryRepo.GetByID(ctx, int(req.CategoryID))
+		category, err := txCategoryRepo.GetByID(ctx, req.CategoryID)
 		if err != nil {
 			return err
 		}
@@ -133,7 +133,7 @@ func (s *ItemService) Create(ctx context.Context, currentUser model.User, req dt
 	return mapper.ToItemResponse(createdItem), nil
 }
 
-func (s *ItemService) Update(ctx context.Context, id int, currentUser model.User, req dto.ItemUpdateRequest, file *multipart.FileHeader) (dto.ItemResponse, error) {
+func (s *ItemService) Update(ctx context.Context, id uint, currentUser model.User, req dto.ItemUpdateRequest, file *multipart.FileHeader) (dto.ItemResponse, error) {
 	var UpdatedItem *model.Item
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -162,7 +162,7 @@ func (s *ItemService) Update(ctx context.Context, id int, currentUser model.User
 		category := &item.Category
 		if item.CategoryID != req.CategoryID {
 			var err error
-			category, err = txCategoryRepo.GetByID(ctx, int(req.CategoryID))
+			category, err = txCategoryRepo.GetByID(ctx, req.CategoryID)
 			if err != nil {
 				return err
 			}
@@ -211,7 +211,7 @@ func (s *ItemService) Update(ctx context.Context, id int, currentUser model.User
 	return mapper.ToItemResponse(UpdatedItem), nil
 }
 
-func (s *ItemService) Delete(ctx context.Context, currentUser model.User, id int) error {
+func (s *ItemService) Delete(ctx context.Context, currentUser model.User, id uint) error {
 	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txItemRepo := s.repo.WithTx(tx)
 		txBorrowRepo := s.borrowRepo.WithTx(tx)

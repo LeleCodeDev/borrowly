@@ -44,7 +44,7 @@ func AuthMiddleware(userRepo *repository.UserRepository) gin.HandlerFunc {
 		}
 
 		ctx := c.Request.Context()
-		user, err := userRepo.GetByID(ctx, int(userID))
+		user, err := userRepo.GetByID(ctx, userID)
 		if err != nil {
 			response.Error(c, http.StatusInternalServerError, "Server errors", nil)
 			c.Abort()

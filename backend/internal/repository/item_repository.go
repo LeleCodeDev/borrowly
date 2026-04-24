@@ -67,7 +67,7 @@ func (r *ItemRepository) GetAll(ctx context.Context, req dto.ItemQuery) ([]model
 	return items, total, nil
 }
 
-func (r *ItemRepository) GetByID(ctx context.Context, id int) (*model.Item, error) {
+func (r *ItemRepository) GetByID(ctx context.Context, id uint) (*model.Item, error) {
 	var item model.Item
 
 	if err := r.db.WithContext(ctx).Preload("Category").First(&item, id).Error; err != nil {
@@ -83,7 +83,7 @@ func (r *ItemRepository) GetByID(ctx context.Context, id int) (*model.Item, erro
 
 func (r *ItemRepository) ExistByName(ctx context.Context, name string) (bool, error) {
 	var count int64
-	err := r.db.WithContext(ctx).Model(&model.Item{}).Where("name = ?", name).Count(&count).Error
+	err := r.db.WithContext(ctx).Model(&model.Item{}).Where("name COLLATE utf8mb4_bin = ?", name).Count(&count).Error
 	return count > 0, err
 }
 
@@ -91,7 +91,7 @@ func (r *ItemRepository) Delete(ctx context.Context, item *model.Item) error {
 	return r.db.WithContext(ctx).Delete(item).Error
 }
 
-func (r *ItemRepository) DeleteByCategoryID(ctx context.Context, catgoryID int) error {
+func (r *ItemRepository) DeleteByCategoryID(ctx context.Context, catgoryID uint) error {
 	return r.db.WithContext(ctx).Where("category_id = ?", catgoryID).Delete(&model.Item{}).Error
 }
 

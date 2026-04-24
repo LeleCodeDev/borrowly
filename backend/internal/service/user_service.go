@@ -46,7 +46,7 @@ func (s *UserService) GetAll(ctx context.Context, req dto.UserQuery) ([]dto.User
 	return responses, total, nil
 }
 
-func (s *UserService) GetByID(ctx context.Context, id int) (dto.UserResponse, error) {
+func (s *UserService) GetByID(ctx context.Context, id uint) (dto.UserResponse, error) {
 	user, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return dto.UserResponse{}, err
@@ -113,7 +113,7 @@ func (s *UserService) Create(ctx context.Context, currentUser model.User, req dt
 	return mapper.ToUserResponse(createdUser), nil
 }
 
-func (s *UserService) Update(ctx context.Context, id int, currentUser model.User, req dto.UserUpdateRequest) (dto.UserResponse, error) {
+func (s *UserService) Update(ctx context.Context, id uint, currentUser model.User, req dto.UserUpdateRequest) (dto.UserResponse, error) {
 	var updatedUser *model.User
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -149,7 +149,7 @@ func (s *UserService) Update(ctx context.Context, id int, currentUser model.User
 	return mapper.ToUserResponse(updatedUser), nil
 }
 
-func (s *UserService) Delete(ctx context.Context, currentUser model.User, id int) error {
+func (s *UserService) Delete(ctx context.Context, currentUser model.User, id uint) error {
 	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txUserRepo := s.repo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)

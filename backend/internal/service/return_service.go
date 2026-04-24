@@ -111,7 +111,7 @@ func (s *ReturnService) CreateForUser(ctx context.Context, currentUser model.Use
 		txItemRepo := s.itemRepo.WithTx(tx)
 		txLogRepo := s.logRepo.WithTx(tx)
 
-		borrow, err := txBorrowRepo.GetByID(ctx, int(req.BorrowID))
+		borrow, err := txBorrowRepo.GetByID(ctx, req.BorrowID)
 		if borrow == nil {
 			return errors.BadRequest(fmt.Sprintf("Borrow not found with ID: %d", req.BorrowID))
 		}
@@ -166,7 +166,7 @@ func (s *ReturnService) CreateForUser(ctx context.Context, currentUser model.Use
 	return mapper.ToReturnResponse(createdReturn), nil
 }
 
-func (s *ReturnService) UpdateForUser(ctx context.Context, id int, currentUser model.User, req dto.ReturnUpdateForUserRequest) (dto.ReturnResponse, error) {
+func (s *ReturnService) UpdateForUser(ctx context.Context, id uint, currentUser model.User, req dto.ReturnUpdateForUserRequest) (dto.ReturnResponse, error) {
 	var updatedReturn *model.Return
 
 	if err := s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
@@ -201,7 +201,7 @@ func (s *ReturnService) UpdateForUser(ctx context.Context, id int, currentUser m
 	return mapper.ToReturnResponse(updatedReturn), nil
 }
 
-func (s *ReturnService) Delete(ctx context.Context, id int, currentUser model.User) error {
+func (s *ReturnService) Delete(ctx context.Context, id uint, currentUser model.User) error {
 	return s.txManager.Transaction(ctx, func(tx *gorm.DB) error {
 		txReturnRepo := s.repo.WithTx(tx)
 		txBorrowRepo := s.borrowRepo.WithTx(tx)
