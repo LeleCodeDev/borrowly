@@ -9,7 +9,6 @@ import (
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -26,12 +25,7 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	var req dto.UserQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation error", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -40,7 +34,7 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 
 	users, total, err := h.service.GetAll(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -64,7 +58,7 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 
 	user, err := h.service.GetByID(ctx, id)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -76,7 +70,7 @@ func (h *UserHandler) GetUserCard(c *gin.Context) {
 
 	dashboardData, err := h.service.GetCardData(ctx)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -87,12 +81,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req dto.UserCreateRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation error", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -101,7 +90,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	user, err := h.service.Create(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -118,12 +107,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var req dto.UserUpdateRequest
 	if err := c.ShouldBind(&req); err != nil {
 
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation error", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -132,7 +116,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	user, err := h.service.Update(ctx, id, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -150,7 +134,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	currentUser := c.MustGet("user").(model.User)
 
 	if err := h.service.Delete(ctx, currentUser, id); err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

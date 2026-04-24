@@ -8,7 +8,6 @@ import (
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
 
@@ -24,12 +23,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -37,7 +31,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	user, err := h.service.Register(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -48,12 +42,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -61,7 +50,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	auth, err := h.service.Login(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

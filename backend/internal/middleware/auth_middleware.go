@@ -38,7 +38,7 @@ func AuthMiddleware(userRepo *repository.UserRepository) gin.HandlerFunc {
 
 		userID, err := jwt.ExtractUserID(claims)
 		if err != nil {
-			response.HandleError(c, err)
+			response.HandleServiceError(c, err)
 			c.Abort()
 			return
 		}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/lelecodedev/borrowly/pkg/errors"
 )
 
@@ -55,9 +56,18 @@ func Error(c *gin.Context, code int, message string, err any) {
 	})
 }
 
-func HandleError(c *gin.Context, err error) {
+func HandleServiceError(c *gin.Context, err error) {
 	if serviceError, ok := err.(*errors.ServiceError); ok {
 		Error(c, serviceError.StatusCode, serviceError.Message, nil)
+		return
+	}
+
+	Error(c, http.StatusInternalServerError, "Server error", err.Error())
+}
+
+func HandleValidationError(c *gin.Context, err error) {
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		Error(c, http.StatusBadRequest, "Validation failed", errors.GetValidationError(validationErrors))
 		return
 	}
 

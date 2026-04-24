@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -26,11 +25,7 @@ func (h *LogHandler) GetAllLogs(c *gin.Context) {
 	var req dto.LogQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -39,7 +34,7 @@ func (h *LogHandler) GetAllLogs(c *gin.Context) {
 
 	logs, total, err := h.service.GetAll(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

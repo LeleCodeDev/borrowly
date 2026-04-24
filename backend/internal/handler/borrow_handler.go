@@ -10,7 +10,6 @@ import (
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -29,12 +28,7 @@ func (h *BorrowHandler) GetAllBorrows(c *gin.Context) {
 	var req dto.BorrowQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -43,7 +37,7 @@ func (h *BorrowHandler) GetAllBorrows(c *gin.Context) {
 
 	borrows, total, err := h.Service.GetAll(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -55,12 +49,7 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 	var req dto.BorrowQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -70,7 +59,7 @@ func (h *BorrowHandler) GetAllBorrowsByUser(c *gin.Context) {
 
 	borrows, total, err := h.Service.GetAllByUser(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -83,7 +72,7 @@ func (h *BorrowHandler) GetBorrowCard(c *gin.Context) {
 
 	dashboardData, err := h.Service.GetCardData(ctx)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -96,7 +85,7 @@ func (h *BorrowHandler) GetBorrowCardByUser(c *gin.Context) {
 
 	cardData, err := h.Service.GetCardDataByUser(ctx, currentUser)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -107,12 +96,7 @@ func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
 	var req dto.BorrowRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -121,7 +105,7 @@ func (h *BorrowHandler) CreateBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Create(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -132,12 +116,7 @@ func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
 	var req dto.BorrowForUserRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -146,7 +125,7 @@ func (h *BorrowHandler) CreateBorrowForUser(c *gin.Context) {
 
 	borrow, err := h.Service.CreateForUser(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -162,12 +141,7 @@ func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
 
 	var req dto.BorrowRequest
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -176,7 +150,7 @@ func (h *BorrowHandler) UpdateBorrowForUser(c *gin.Context) {
 
 	borrow, err := h.Service.UpdateForUser(ctx, req, id, currentUser)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -192,12 +166,7 @@ func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
 
 	var req dto.BorrowApprovalRequest
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -206,7 +175,7 @@ func (h *BorrowHandler) ApproveBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Approve(ctx, currentUser, id, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -222,12 +191,7 @@ func (h *BorrowHandler) RejectBorrow(c *gin.Context) {
 
 	var req dto.BorrowApprovalRequest
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -236,7 +200,7 @@ func (h *BorrowHandler) RejectBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Reject(ctx, currentUser, id, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -256,7 +220,7 @@ func (h *BorrowHandler) CancelBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Cancel(ctx, currentUSer, id)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -275,7 +239,7 @@ func (h *BorrowHandler) ConfirmBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Confirm(ctx, currentUser, id)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -291,12 +255,7 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 
 	var req dto.ReturnRequest
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -305,7 +264,7 @@ func (h *BorrowHandler) ReturnedBorrow(c *gin.Context) {
 
 	borrow, err := h.Service.Return(ctx, currentUser, id, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -323,7 +282,7 @@ func (h *BorrowHandler) DeleteBorrow(c *gin.Context) {
 	currentUser := c.MustGet("user").(model.User)
 
 	if err := h.Service.Delete(ctx, id, currentUser); err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -333,11 +292,8 @@ func (h *BorrowHandler) DeleteBorrow(c *gin.Context) {
 func (h *BorrowHandler) GenerateBorrowPDF(c *gin.Context) {
 	var req dto.BorrowQuery
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+
+		response.HandleValidationError(c, err)
 		return
 	}
 	req.SetDefaults()
@@ -345,7 +301,7 @@ func (h *BorrowHandler) GenerateBorrowPDF(c *gin.Context) {
 	ctx := c.Request.Context()
 	pdfBytes, err := h.Service.GeneratePDF(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

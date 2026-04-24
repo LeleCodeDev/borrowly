@@ -9,7 +9,6 @@ import (
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -28,12 +27,7 @@ func (h *ReturnHandler) GetAllReturns(c *gin.Context) {
 	var req dto.ReturnQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -42,7 +36,7 @@ func (h *ReturnHandler) GetAllReturns(c *gin.Context) {
 
 	returns, total, err := h.service.GetAll(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -54,12 +48,7 @@ func (h *ReturnHandler) GetAllReturnsByUser(c *gin.Context) {
 	var req dto.ReturnQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", err)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -69,7 +58,7 @@ func (h *ReturnHandler) GetAllReturnsByUser(c *gin.Context) {
 
 	returns, total, err := h.service.GetAllByUser(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -82,7 +71,7 @@ func (h *ReturnHandler) GetReturnCard(c *gin.Context) {
 
 	dashboardData, err := h.service.GetCardData(ctx)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -95,7 +84,7 @@ func (h *ReturnHandler) GetReturnCardByUser(c *gin.Context) {
 
 	cardData, err := h.service.GetCardDataByUser(ctx, currentUser)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -106,12 +95,7 @@ func (h *ReturnHandler) CreateReturnForUser(c *gin.Context) {
 	var req dto.ReturnCreateForUserRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -120,7 +104,7 @@ func (h *ReturnHandler) CreateReturnForUser(c *gin.Context) {
 
 	returnBorrow, err := h.service.CreateForUser(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -137,12 +121,7 @@ func (h *ReturnHandler) UpdateReturnForUser(c *gin.Context) {
 	var req dto.ReturnUpdateForUserRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -151,7 +130,7 @@ func (h *ReturnHandler) UpdateReturnForUser(c *gin.Context) {
 
 	returnBorrow, err := h.service.UpdateForUser(ctx, id, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -169,7 +148,7 @@ func (h *ReturnHandler) DeleteReturn(c *gin.Context) {
 	currentUser := c.MustGet("user").(model.User)
 
 	if err := h.service.Delete(ctx, id, currentUser); err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

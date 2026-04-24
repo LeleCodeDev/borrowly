@@ -9,7 +9,6 @@ import (
 	"github.com/lelecodedev/borrowly/internal/dto"
 	"github.com/lelecodedev/borrowly/internal/model"
 	"github.com/lelecodedev/borrowly/internal/service"
-	"github.com/lelecodedev/borrowly/pkg/errors"
 	"github.com/lelecodedev/borrowly/pkg/pagination"
 	"github.com/lelecodedev/borrowly/pkg/response"
 )
@@ -28,11 +27,7 @@ func (h *CategoryHandler) GetAllCategories(c *gin.Context) {
 	var req dto.CategoryQuery
 
 	if err := c.ShouldBindQuery(&req); err != nil {
-		if valErrors, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valErrors)
-			return
-		}
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -41,7 +36,7 @@ func (h *CategoryHandler) GetAllCategories(c *gin.Context) {
 
 	categories, total, err := h.service.GetAll(ctx, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -66,7 +61,7 @@ func (h *CategoryHandler) GetCategoryByID(c *gin.Context) {
 
 	category, err := h.service.GetByID(ctx, id)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -77,12 +72,8 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 	var req dto.CategoryRequest
 
 	if err := c.ShouldBind(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valError)
-			return
-		}
 
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -91,7 +82,7 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 
 	category, err := h.service.Create(ctx, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -107,12 +98,7 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 	var req dto.CategoryRequest
 	if err := c.ShouldBind(&req); err != nil {
-		if valError, ok := errors.GetValidationError(err); ok {
-			response.Error(c, http.StatusBadRequest, "Validation failed", valError)
-			return
-		}
-
-		response.Error(c, http.StatusInternalServerError, "Server error", nil)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -121,7 +107,7 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 	category, err := h.service.Update(ctx, id, currentUser, req)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -139,7 +125,7 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 	currentUser := c.MustGet("user").(model.User)
 
 	if err := h.service.Delete(ctx, currentUser, id); err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 

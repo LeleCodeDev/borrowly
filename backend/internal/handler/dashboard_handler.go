@@ -25,7 +25,7 @@ func (h *DashboardHandler) GetAdminDashboard(c *gin.Context) {
 
 	dashboardData, err := h.service.GetAdminDashboard(ctx)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func (h *DashboardHandler) GetOfficerDashboard(c *gin.Context) {
 
 	dashboardData, err := h.service.GetOfficerDashboard(ctx)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (h *DashboardHandler) GetBorrowerDashboard(c *gin.Context) {
 
 	dashboardData, err := h.service.GetBorrowerDashboard(ctx, currentUser)
 	if err != nil {
-		response.HandleError(c, err)
+		response.HandleServiceError(c, err)
 		return
 	}
 
