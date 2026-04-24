@@ -105,6 +105,7 @@ func (r *UserRepository) CountAll(ctx context.Context) (int64, error) {
 	var count int64
 	if err := r.db.WithContext(ctx).
 		Model(&model.User{}).
+		Where("role != ?", "admin").
 		Count(&count).Error; err != nil {
 		return 0, err
 	}
