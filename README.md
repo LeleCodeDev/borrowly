@@ -87,7 +87,8 @@ go mod tidy
 ```
 or manually :
 ```bash
-go get github.com/SebastiaanKlippert/go-wkhtmltopdf@v1.9.3 github.com/gin-contrib/cors@v1.7.6 github.com/gin-gonic/gin@v1.11.0 github.com/go-playground/validator/v10@v10.30.1 github.com/golang-jwt/jwt/v5@v5.3.1 github.com/google/uuid@v1.6.0 github.com/joho/godotenv@v1.5.1 golang.org/x/crypto@v0.48.0 gorm.io/driver/mysql@v1.6.0 gorm.io/gorm@v1.31.1
+go get -u github.com/SebastiaanKlippert/go-wkhtmltopdf github.com/gin-contrib/cors github.com/gin-gonic/gin github.com/go-playground/validator/v10 github.com/golang-jwt/jwt/v5 github.com/google/uuid github.com/joho/godotenv golang.org/x/crypto gorm.io/driver/mysql gorm.io/gorm
+
 ```
 
 ### 4. Configure environment

@@ -214,7 +214,9 @@ const AdminDashboard = () => {
             <CardContent className="p-0">
               <div className="divide-y">
                 {logIsPending ? (
-                  <Spinner className="w-8 h-8" />
+                  <div className="flex flex-col h-full justify-center items-center gap-3 py-20">
+                    <Spinner className="w-8 h-8" />
+                  </div>
                 ) : (
                   logs?.map((log) => (
                     <div
@@ -223,7 +225,7 @@ const AdminDashboard = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div>
-                          <p className="text-sm font-medium leading-tight">
+                          <p className="text-sm font-medium leading-tight truncate max-w-md">
                             {log.activity}
                           </p>
                           <p className="text-xs text-muted-foreground">
